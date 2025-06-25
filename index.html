@@ -424,6 +424,7 @@
         }
 
         function createWordDie(dieElement, items) {
+            dieElement.innerHTML = ''; // Clear previous faces
             items.forEach((item, index) => {
                 if (item && index < 6) { 
                     dieElement.appendChild(createSymbolDieFace(item.symbol, item.text, index + 1));

@@ -95,27 +95,36 @@
             transition: transform 4s cubic-bezier(0.23, 1, 0.32, 1);
             box-shadow: 0 0 0 5px #444;
         }
-        .wheel-text-container {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        .wheel-text {
+        .slice {
             position: absolute;
             width: 50%;
             height: 50%;
-            top: 0;
             left: 50%;
-            transform-origin: 0% 100%;
+            top: 50%;
+            transform-origin: 0% 0%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+        }
+        .slice-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transform-origin: center;
+            position: absolute;
+            width: 100px;
+            top: 20px;
+            left: -50px;
+        }
+        .slice-text {
+            color: black;
             font-weight: bold;
             font-size: 14px;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.7);
+        }
+        .slice-symbol {
+            font-size: 24px;
+            margin-top: 5px;
         }
 
         /* --- Slot Machine / Writer Styles --- */
@@ -157,11 +166,7 @@
             font-weight: bold;
         }
         .die-face-symbol {
-            font-size: 24px;
-        }
-        .die-face-text {
-            font-size: 10px;
-            text-align: center;
+            font-size: 36px;
         }
         .face-1 { transform: rotateY(0deg) translateZ(40px); }
         .face-2 { transform: rotateY(90deg) translateZ(40px); }
@@ -197,9 +202,7 @@
             <h1 class="title">The Wheel of Justice</h1><p class="subtitle">Spin for a random punishment type!</p>
             <div class="wheel-container">
                 <div class="pointer-container"><div class="pointer"></div></div>
-                <div id="wheel" class="wheel">
-                    <div id="wheelTextContainer" class="wheel-text-container"></div>
-                </div>
+                <div id="wheel" class="wheel"></div>
             </div>
             <button id="spinButton" class="action-button">SPIN!</button>
             <div id="wheelResultContainer" class="result-container"></div>
@@ -249,7 +252,7 @@
                 { id: 'c9', task: 'Clean the toilet', action: 'Clean', object: 'the toilet', symbol: '🚽', location: 'in the main bathroom', condition: 'inside and out.' },
                 { id: 'c10', task: 'Make your bed', action: 'Make', object: 'your bed', symbol: '🛏️', location: 'in your room', condition: 'with neat corners.' },
                 { id: 'c11', task: 'Unload the dishwasher', action: 'Unload', object: 'the dishwasher', symbol: '🍽️', location: 'in the kitchen', condition: 'and put everything away.' },
-                { id: 'c12', task: 'Clean the litter box', action: 'Clean', object: 'the litter box', symbol: '🐾', location: 'wherever it is', condition: 'completely.' },
+                { id: 'c12', task: 'Clean the litter box', action: 'Clean', object: 'the litter box', symbol: '�', location: 'wherever it is', condition: 'completely.' },
                 { id: 'c13', task: 'Feed the pet(s)', action: 'Feed', object: 'the pet(s)', symbol: '🐶', location: 'in the kitchen', condition: 'their dinner on time.' },
                 { id: 'c14', task: 'Polish your shoes', action: 'Polish', object: 'your shoes', symbol: '👞', location: 'by the front door', condition: 'until they are shiny.' },
                 { id: 'c15', task: 'Pull weeds', action: 'Pull', object: 'weeds', symbol: '🌱', location: 'in the garden', condition: 'for 30 minutes.' },
@@ -257,15 +260,18 @@
                 { id: 'c17', task: 'Mow the lawn', action: 'Mow', object: 'the lawn', symbol: '🏡', location: 'in the front yard', condition: 'carefully.' },
                 { id: 'c18', task: 'Edge the sidewalk', action: 'Edge', object: 'the sidewalk', symbol: '📏', location: 'out front', condition: 'in a straight line.' },
                 { id: 'c19', task: 'Clean the trash cans', action: 'Clean', object: 'the trash cans', symbol: '🗑️', location: 'outside', condition: 'with soap and a hose.' },
-                { id: 'c20', task: 'Polish the good jewelry', action: 'Polish', object: 'the good jewelry', symbol: '💍', location: 'from the jewelry box', condition: 'gently with a cloth.' }
+                { id: 'c20', task: 'Polish the good jewelry', action: 'Polish', object: 'the good jewelry', symbol: '💍', location: 'from the jewelry box', condition: 'gently with a cloth.' },
+                { id: 'c21', task: 'Hand-wash the garage floor', action: 'Hand-wash', object: 'the garage floor', symbol: '🧽', location: 'in the garage', condition: 'with a small brush.' },
+                { id: 'c22', task: 'Count the blades of grass', action: 'Count', object: 'the blades of grass', symbol: '🌱', location: 'in a one-foot square of the lawn', condition: 'and write down the number.' },
+                { id: 'c23', task: 'Hand-wash the patio', action: 'Hand-wash', object: 'the patio', symbol: '💧', location: 'outside', condition: 'with a bucket and sponge.' }
             ],
             tech: [
-                { id: 't1', sentence: 'Lose access to the tablet for one hour.' },
-                { id: 't2', sentence: 'No using the phone for the rest of the day.' },
-                { id: 't3', sentence: 'You cannot play video games until tomorrow.' },
-                { id: 't4', sentence: 'Say goodbye to the computer for the evening.' },
-                { id: 't5', sentence: 'Time off from the television until homework is done.' },
-                { id: 't6', sentence: 'A break from the Switch for 30 minutes.' }
+                { id: 't1', sentence: 'No screen time for one hour.' },
+                { id: 't2', sentence: 'No screen time for the rest of the day.' },
+                { id: 't3', sentence: 'No screen time until your room is clean.' },
+                { id: 't4', sentence: 'You lose 30 minutes of your screen time allowance.' },
+                { id: 't5', sentence: 'Time off from all screens until homework is done.' },
+                { id: 't6', sentence: 'No screen time tomorrow morning.' }
             ],
             deterrent: [
                 { id: 'd1', sentence: 'Write a 500-word essay about what you did wrong and read it aloud.' },
@@ -344,7 +350,7 @@
         }
 
         // --- Wheel Logic ---
-        const wheel = document.getElementById('wheel'), spinButton = document.getElementById('spinButton'), wheelResultContainer = document.getElementById('wheelResultContainer'), wheelTextContainer = document.getElementById('wheelTextContainer');
+        const wheel = document.getElementById('wheel'), spinButton = document.getElementById('spinButton'), wheelResultContainer = document.getElementById('wheelResultContainer');
         const wheelCategories = [ 
             { label: 'Chore', color: '#FF6B6B', type: 'chore' }, { label: 'Tech Ban', color: '#FFD166', type: 'tech' }, 
             { label: 'Deterrent', color: '#06D6A0', type: 'deterrent' }, { label: 'Chore', color: '#118AB2', type: 'chore' }, 
@@ -356,21 +362,33 @@
         let currentRotation = 0;
         function createWheel() {
             const sliceAngle = 360 / wheelCategories.length;
-            let gradientString = 'conic-gradient(';
+            const skew = 90 - sliceAngle;
+
             wheelCategories.forEach((cat, i) => {
-                const startAngle = i * sliceAngle;
-                const endAngle = (i + 1) * sliceAngle;
-                gradientString += `${cat.color} ${startAngle}deg ${endAngle}deg, `;
-                const textDiv = document.createElement('div');
-                textDiv.className = 'wheel-text';
-                textDiv.textContent = cat.label;
-                textDiv.style.transform = `rotate(${startAngle + sliceAngle / 2}deg) translateX(75px)`;
-                wheelTextContainer.appendChild(textDiv);
+                const slice = document.createElement('div');
+                slice.className = 'slice';
+                slice.style.backgroundColor = cat.color;
+                slice.style.transform = `rotate(${i * sliceAngle}deg) skewY(${skew}deg)`;
+
+                const content = document.createElement('div');
+                content.className = 'slice-content';
+                content.style.transform = `skewX(${skew}deg) rotate(${sliceAngle / 2}deg)`;
+
+                const text = document.createElement('span');
+                text.className = 'slice-text';
+                text.textContent = cat.label;
+                content.appendChild(text);
+
+                const symbol = document.createElement('span');
+                symbol.className = 'slice-symbol';
+                symbol.textContent = '😢';
+                content.appendChild(symbol);
+                
+                slice.appendChild(content);
+                wheel.appendChild(slice);
             });
-            gradientString = gradientString.slice(0, -2) + ')';
-            wheel.style.background = gradientString;
         }
-        function spinWheel() { if(isSpinning)return;isSpinning=true;spinButton.disabled=true;spinButton.textContent='Spinning...';wheelResultContainer.innerHTML='';const f=Math.floor(Math.random()*3)+4,s=Math.floor(Math.random()*wheelCategories.length),a=360/wheelCategories.length;currentRotation+=f*360+s*a+a/2;wheel.style.transform=`rotate(${currentRotation}deg)`;setTimeout(()=>{const category = wheelCategories[s]; const result = generatePunishment(category.type); wheelResultContainer.innerHTML=`<p class="result-text">Justice has been served...</p><p class="result-value" style="color: ${category.color}">${result.sentence}</p>`;isSpinning=false;spinButton.disabled=false;spinButton.textContent='SPIN!'},4000) }
+        function spinWheel() { if(isSpinning)return;isSpinning=true;spinButton.disabled=true;spinButton.textContent='Spinning...';wheelResultContainer.innerHTML='';const f=Math.floor(Math.random()*3)+4,s=Math.floor(Math.random()*wheelCategories.length),a=360/wheelCategories.length;currentRotation+=f*360+s*a+a/2;wheel.style.transform=`rotate(${currentRotation}deg)`;setTimeout(()=>{const category = wheelCategories[s]; const result = generatePunishment(category.type); wheelResultContainer.innerHTML=`<p class="result-text">Justice has been served...</p><p class="result-value" style="font-weight: bold; color: black;">${result.sentence}</p>`;isSpinning=false;spinButton.disabled=false;spinButton.textContent='SPIN!'},4000) }
         
         // --- Slots to Make'em Sorry Logic ---
         const slotsButton=document.getElementById('slotsButton'), sorrySlotsResult = document.getElementById('sorrySlotsResult');
@@ -416,10 +434,10 @@
         // --- Dice Roll Logic ---
         const die1=document.getElementById('die1'),die2=document.getElementById('die2'),die3=document.getElementById('die3'),die4=document.getElementById('die4'),diceButton=document.getElementById('diceButton'),diceResultContainer=document.getElementById('diceResultContainer');
         
-        function createSymbolDieFace(symbol, text, faceIndex) {
+        function createSymbolDieFace(symbol, faceIndex) {
             const face = document.createElement('div');
             face.className = `die-face face-${faceIndex}`;
-            face.innerHTML = `<div class="die-face-symbol">${symbol}</div><div class="die-face-text">${text}</div>`;
+            face.innerHTML = `<div class="die-face-symbol">${symbol}</div>`;
             return face;
         }
 
@@ -427,7 +445,7 @@
             dieElement.innerHTML = ''; // Clear previous faces
             items.forEach((item, index) => {
                 if (item && index < 6) { 
-                    dieElement.appendChild(createSymbolDieFace(item.symbol, item.text, index + 1));
+                    dieElement.appendChild(createSymbolDieFace(item.symbol, index + 1));
                 }
             });
         }
@@ -451,10 +469,10 @@
                 const result = generatePunishment('chore');
                 const choreData = result.data;
 
-                setDieFace(die1, masterPunishmentList.chore.findIndex(p => p.action === choreData.action) + 1);
-                setDieFace(die2, masterPunishmentList.chore.findIndex(p => p.object === choreData.object) + 1);
-                setDieFace(die3, masterPunishmentList.chore.findIndex(p => p.location === choreData.location) + 1);
-                setDieFace(die4, masterPunishmentList.chore.findIndex(p => p.condition === choreData.condition) + 1);
+                setDieFace(die1, masterPunishmentList.chore.findIndex(p => p.id === choreData.id) + 1);
+                setDieFace(die2, masterPunishmentList.chore.findIndex(p => p.id === choreData.id) + 1);
+                setDieFace(die3, masterPunishmentList.chore.findIndex(p => p.id === choreData.id) + 1);
+                setDieFace(die4, masterPunishmentList.chore.findIndex(p => p.id === choreData.id) + 1);
 
                 diceResultContainer.innerHTML = `<p class="result-text">The dice have decided!</p><p class="result-value">${result.sentence}</p>`;
                 isSpinning=false;
@@ -469,10 +487,10 @@
         
         slotsButton.addEventListener('click', spinSorrySlots);
         
-        const choreDiceActions = masterPunishmentList.chore.map(p => ({ text: p.action, symbol: p.symbol }));
-        const choreDiceObjects = masterPunishmentList.chore.map(p => ({ text: p.object, symbol: p.symbol }));
-        const choreDiceLocations = masterPunishmentList.chore.map(p => ({ text: p.location, symbol: '📍' }));
-        const choreDiceConditions = masterPunishmentList.chore.map(p => ({ text: p.condition, symbol: '⏰' }));
+        const choreDiceActions = masterPunishmentList.chore.map(p => ({ symbol: p.symbol }));
+        const choreDiceObjects = masterPunishmentList.chore.map(p => ({ symbol: p.symbol }));
+        const choreDiceLocations = masterPunishmentList.chore.map(p => ({ symbol: '📍' }));
+        const choreDiceConditions = masterPunishmentList.chore.map(p => ({ symbol: '⏰' }));
 
         createWordDie(die1, choreDiceActions);
         createWordDie(die2, choreDiceObjects);
@@ -483,3 +501,4 @@
     </script>
 </body>
 </html>
+�

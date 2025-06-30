@@ -94,39 +94,14 @@
             overflow: hidden;
             transition: transform 4s cubic-bezier(0.23, 1, 0.32, 1);
             box-shadow: 0 0 0 5px #444;
-        }
-        .slice {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            left: 50%;
-            top: 50%;
-            transform-origin: 0% 0%;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 80px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
-        .slice-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transform-origin: center;
-            position: absolute;
-            width: 100px;
-            top: 20px;
-            left: -50px;
-        }
-        .slice-text {
-            color: black;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .slice-symbol {
-            font-size: 24px;
-            margin-top: 5px;
-        }
-
+        
         /* --- Slot Machine / Writer Styles --- */
         #sorrySlotsDisplay {
             background-color: #222;
@@ -157,17 +132,21 @@
             border-radius: 8px;
             background: white;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 5px;
+            flex-wrap: wrap;
+            padding: 10px;
             box-sizing: border-box;
-            color: #333;
-            font-weight: bold;
         }
-        .die-face-symbol {
-            font-size: 36px;
-        }
+        .pip { width: 18px; height: 18px; background-color: #333; border-radius: 50%; margin: 5px; }
+        .face-1 .pip:nth-child(n+2), .face-2 .pip:nth-child(n+3), .face-3 .pip:nth-child(n+4), .face-4 .pip:nth-child(n+5), .face-5 .pip:nth-child(n+6), .face-6 .pip:nth-child(n+7) { display: none; }
+        .face-2 .pip:nth-child(2) { align-self: flex-end; }
+        .face-3 .pip:nth-child(2) { align-self: center; }
+        .face-3 .pip:nth-child(3) { align-self: flex-end; }
+        .face-4 .pip:nth-child(2), .face-4 .pip:nth-child(4) { align-self: flex-end; }
+        .face-5 .pip:nth-child(3) { align-self: center; }
+        .face-5 .pip:nth-child(4), .face-5 .pip:nth-child(5) { align-self: flex-end; }
+        .face-6 .pip:nth-child(4), .face-6 .pip:nth-child(5), .face-6 .pip:nth-child(6) { align-self: flex-end; }
         .face-1 { transform: rotateY(0deg) translateZ(40px); }
         .face-2 { transform: rotateY(90deg) translateZ(40px); }
         .face-3 { transform: rotateY(180deg) translateZ(40px); }
@@ -199,10 +178,10 @@
         
         <!-- Spinning Wheel Mode -->
         <div id="wheelMode" class="game-mode active">
-            <h1 class="title">The Wheel of Justice</h1><p class="subtitle">Spin for a random punishment type!</p>
+            <h1 class="title">The Wheel of Justice</h1><p class="subtitle">Spin for a random punishment!</p>
             <div class="wheel-container">
                 <div class="pointer-container"><div class="pointer"></div></div>
-                <div id="wheel" class="wheel"></div>
+                <div id="wheel" class="wheel">?</div>
             </div>
             <button id="spinButton" class="action-button">SPIN!</button>
             <div id="wheelResultContainer" class="result-container"></div>
@@ -210,7 +189,7 @@
 
         <!-- Slot Machine / Deterrent Writer Mode -->
         <div id="slotsMode" class="game-mode">
-            <h1 class="title">Time To Pay The Piper</h1><p class="subtitle">Push the button for a serious consequence!</p>
+            <h1 class="title">Time To Pay The Piper</h1><p class="subtitle">Push the button for a random punishment!</p>
             <div id="sorrySlotsDisplay">
                 <p class="result-value" id="sorrySlotsResult"></p>
             </div>
@@ -219,7 +198,7 @@
         
         <!-- Dice Roll Mode -->
         <div id="diceMode" class="game-mode">
-            <h1 class="title">Chore Dice</h1><p class="subtitle">Roll the dice for a sensible chore!</p>
+            <h1 class="title">Chore Dice</h1><p class="subtitle">Roll the dice for a random punishment!</p>
             <div class="dice-container">
                 <div class="die-scene"><div class="die-cube" id="die1"></div></div>
                 <div class="die-scene"><div class="die-cube" id="die2"></div></div>
@@ -239,51 +218,51 @@
         const PUNISHMENT_HISTORY_KEY = 'punishmentHistory';
 
         // --- Master Punishment List ---
-        const masterPunishmentList = {
-            chore: [
-                { id: 'c1', task: 'Clean the windows', action: 'Clean', object: 'windows', symbol: '🧼', location: 'in the living room', condition: 'until they shine.' },
-                { id: 'c2', task: 'Wipe the counters', action: 'Wipe', object: 'counters', symbol: '🧽', location: 'in the kitchen', condition: 'with a wet cloth.' },
-                { id: 'c3', task: 'Organize the toys', action: 'Organize', object: 'toys', symbol: '🧸', location: 'in your room', condition: 'into the right bins.' },
-                { id: 'c4', task: 'Wash the dishes', action: 'Wash', object: 'dishes', symbol: '🍽️', location: 'in the kitchen', condition: 'by hand.' },
-                { id: 'c5', task: 'Dust the shelves', action: 'Dust', object: 'shelves', symbol: '💨', location: 'in the living room', condition: 'carefully.' },
-                { id: 'c6', task: 'Sweep the floor', action: 'Sweep', object: 'floor', symbol: '🧹', location: 'in the garage', condition: 'and take out the trash.' },
-                { id: 'c7', task: 'Vacuum the carpets', action: 'Vacuum', object: 'carpets', symbol: '💨', location: 'in every room', condition: 'thoroughly.' },
-                { id: 'c8', task: 'Mop the kitchen floor', action: 'Mop', object: 'kitchen floor', symbol: '💧', location: 'in the kitchen', condition: 'until it is clean.' },
-                { id: 'c9', task: 'Clean the toilet', action: 'Clean', object: 'the toilet', symbol: '🚽', location: 'in the main bathroom', condition: 'inside and out.' },
-                { id: 'c10', task: 'Make your bed', action: 'Make', object: 'your bed', symbol: '🛏️', location: 'in your room', condition: 'with neat corners.' },
-                { id: 'c11', task: 'Unload the dishwasher', action: 'Unload', object: 'the dishwasher', symbol: '🍽️', location: 'in the kitchen', condition: 'and put everything away.' },
-                { id: 'c12', task: 'Clean the litter box', action: 'Clean', object: 'the litter box', symbol: '�', location: 'wherever it is', condition: 'completely.' },
-                { id: 'c13', task: 'Feed the pet(s)', action: 'Feed', object: 'the pet(s)', symbol: '🐶', location: 'in the kitchen', condition: 'their dinner on time.' },
-                { id: 'c14', task: 'Polish your shoes', action: 'Polish', object: 'your shoes', symbol: '👞', location: 'by the front door', condition: 'until they are shiny.' },
-                { id: 'c15', task: 'Pull weeds', action: 'Pull', object: 'weeds', symbol: '🌱', location: 'in the garden', condition: 'for 30 minutes.' },
-                { id: 'c16', task: 'Wash the car', action: 'Wash', object: 'the car', symbol: '🚗', location: 'in the driveway', condition: 'with soap and water.' },
-                { id: 'c17', task: 'Mow the lawn', action: 'Mow', object: 'the lawn', symbol: '🏡', location: 'in the front yard', condition: 'carefully.' },
-                { id: 'c18', task: 'Edge the sidewalk', action: 'Edge', object: 'the sidewalk', symbol: '📏', location: 'out front', condition: 'in a straight line.' },
-                { id: 'c19', task: 'Clean the trash cans', action: 'Clean', object: 'the trash cans', symbol: '🗑️', location: 'outside', condition: 'with soap and a hose.' },
-                { id: 'c20', task: 'Polish the good jewelry', action: 'Polish', object: 'the good jewelry', symbol: '💍', location: 'from the jewelry box', condition: 'gently with a cloth.' },
-                { id: 'c21', task: 'Hand-wash the garage floor', action: 'Hand-wash', object: 'the garage floor', symbol: '🧽', location: 'in the garage', condition: 'with a small brush.' },
-                { id: 'c22', task: 'Count the blades of grass', action: 'Count', object: 'the blades of grass', symbol: '🌱', location: 'in a one-foot square of the lawn', condition: 'and write down the number.' },
-                { id: 'c23', task: 'Hand-wash the patio', action: 'Hand-wash', object: 'the patio', symbol: '💧', location: 'outside', condition: 'with a bucket and sponge.' }
-            ],
-            tech: [
-                { id: 't1', sentence: 'No screen time for one hour.' },
-                { id: 't2', sentence: 'No screen time for the rest of the day.' },
-                { id: 't3', sentence: 'No screen time until your room is clean.' },
-                { id: 't4', sentence: 'You lose 30 minutes of your screen time allowance.' },
-                { id: 't5', sentence: 'Time off from all screens until homework is done.' },
-                { id: 't6', sentence: 'No screen time tomorrow morning.' }
-            ],
-            deterrent: [
-                { id: 'd1', sentence: 'Write a 500-word essay about what you did wrong and read it aloud.' },
-                { id: 'd2', sentence: 'Copy the first 5 pages of the dictionary neatly and with no mistakes.' },
-                { id: 'd3', sentence: 'Create a story about why your behavior was unacceptable and what you will do differently next time.' },
-                { id: 'd4', sentence: 'Write an apology letter to the person you affected and deliver it in person.' },
-                { id: 'd5', sentence: 'Research and write a 2-page report on respect, due by tomorrow morning.' },
-                { id: 'd6', sentence: 'Copy "I will make better choices" 100 times on paper without any scribbles.' },
-                { id: 'd7', sentence: 'You will spend one hour doing volunteer work at a place of your parent\'s choosing this weekend.'},
-                { id: 'd8', sentence: 'Plan a public service project for the family to complete together.'}
-            ]
-        };
+        const masterPunishmentList = [
+            "Vacuum the living room - 30 minutes", "Dust the furniture - 20 minutes", "Mop the kitchen floor - 25 minutes",
+            "Mow the lawn - 1 hour", "Feed the pets - 15 minutes", "Write \"I will respect others\" 50 times - 30 minutes",
+            "Clean the bathroom sink - 15 minutes", "Organize the bookshelf - 45 minutes", "Sweep the porch - 20 minutes",
+            "Water the plants - 15 minutes", "Write a 100-word essay on kindness - 1 hour", "Wipe down kitchen counters - 15 minutes",
+            "Sort the recycling - 20 minutes", "Rake leaves in the yard - 1 hour", "Clean the windows - 30 minutes",
+            "Write \"I’m sorry for my actions\" 25 times - 15 minutes", "Wash the dishes - 30 minutes", "Dust the ceiling fans - 20 minutes",
+            "Pick up trash in the yard - 30 minutes", "Organize the toy box - 25 minutes", "Write a letter of apology - 45 minutes",
+            "Clean the refrigerator shelves - 30 minutes", "Sweep the garage - 25 minutes", "Pull weeds in the garden - 1 hour",
+            "Wipe down light switches - 15 minutes", "Write \"I will listen to instructions\" 50 times - 30 minutes", "Fold laundry - 30 minutes",
+            "Clean the pet’s bedding - 20 minutes", "Collect 100 blades of grass - 30 minutes", "Vacuum under furniture - 25 minutes",
+            "Write a 150-word essay on responsibility - 1 hour", "Dust the blinds - 20 minutes", "Water the lawn - 30 minutes",
+            "Organize the pantry - 30 minutes", "Clean the microwave - 15 minutes", "Write \"I will be honest\" 50 times - 30 minutes",
+            "Sweep the driveway - 20 minutes", "Wash the pet’s bowls - 15 minutes", "Pick up sticks in the yard - 30 minutes",
+            "Clean the baseboards - 25 minutes", "Write a letter about why you feel bad - 45 minutes", "Wipe down door handles - 15 minutes",
+            "Sort laundry by color - 20 minutes", "Rake the garden beds - 1 hour", "Clean the bathroom mirror - 15 minutes",
+            "Write \"I will be kind\" 25 times - 15 minutes", "Vacuum the stairs - 20 minutes", "Dust the picture frames - 15 minutes",
+            "Collect 50 small pebbles - 30 minutes", "Organize the shoe rack - 20 minutes", "Write a 100-word essay on respect - 1 hour",
+            "Clean the kitchen chairs - 20 minutes", "Sweep the patio - 25 minutes", "Water the flower beds - 30 minutes",
+            "Wipe down the TV stand - 15 minutes", "Write \"I will follow rules\" 50 times - 30 minutes", "Fold blankets in the living room - 20 minutes",
+            "Clean the pet’s toys - 15 minutes", "Pick up litter in the backyard - 30 minutes", "Dust the shelves - 20 minutes",
+            "Write a letter to a family member about gratitude - 45 minutes", "Vacuum the car interior - 30 minutes", "Sweep the front walkway - 20 minutes",
+            "Pull weeds from the driveway cracks - 1 hour", "Clean the dining table - 15 minutes", "Write \"I will be responsible\" 25 times - 15 minutes",
+            "Organize the coat closet - 25 minutes", "Wash the front door - 15 minutes", "Collect 75 blades of grass - 30 minutes",
+            "Wipe down the kitchen appliances - 20 minutes", "Write a 150-word essay on honesty - 1 hour", "Dust the lampshades - 15 minutes",
+            "Water the shrubs - 30 minutes", "Clean the bathroom countertop - 15 minutes", "Write \"I’m sorry for not listening\" 50 times - 30 minutes",
+            "Sweep the basement floor - 25 minutes", "Organize the game cupboard - 20 minutes", "Pick up pinecones in the yard - 30 minutes",
+            "Clean the pet’s crate - 20 minutes", "Write a letter about why you value family - 45 minutes", "Vacuum the bedroom - 20 minutes",
+            "Dust the window sills - 15 minutes", "Rake the front yard - 1 hour", "Wipe down the staircase railing - 15 minutes",
+            "Write \"I will be respectful\" 25 times - 15 minutes", "Organize the craft supplies - 25 minutes", "Wash the patio furniture - 30 minutes",
+            "Collect 50 twigs - 30 minutes", "Clean the kitchen sink - 15 minutes", "Write a 100-word essay on teamwork - 1 hour",
+            "Sweep the back porch - 20 minutes", "Dust the TV screen - 15 minutes", "Water the vegetable garden - 30 minutes",
+            "Organize the desk - 20 minutes", "Write \"I will be patient\" 50 times - 30 minutes", "Clean the bathroom floor - 20 minutes",
+            "Pick up leaves in the driveway - 30 minutes", "Wipe down the refrigerator door - 15 minutes", "Write a letter about why you’re sorry - 45 minutes",
+            "Vacuum the hallway - 20 minutes", "Dust the books - 15 minutes", "Pull weeds in the front yard - 1 hour",
+            "Clean the light fixtures - 20 minutes", "Write \"I will be helpful\" 25 times - 15 minutes", "Organize the garage tools - 25 minutes",
+            "Wash the windowsills - 20 minutes", "Collect 100 small stones - 30 minutes", "Wipe down the kitchen table - 15 minutes",
+            "Write a 150-word essay on patience - 1 hour", "Sweep the deck - 20 minutes", "Dust the mantle - 15 minutes",
+            "Water the trees - 30 minutes", "Clean the pet’s water bowl - 15 minutes", "Write \"I will be kind to others\" 50 times - 30 minutes",
+            "Organize the linen closet - 25 minutes", "Pick up trash around the mailbox - 20 minutes", "Clean the bathroom tiles - 20 minutes",
+            "Write a letter about why you respect rules - 45 minutes", "Vacuum the dining room - 20 minutes", "Dust the air vents - 15 minutes",
+            "Rake the backyard - 1 hour", "Wipe down the pantry shelves - 20 minutes", "Write \"I’m sorry for being rude\" 25 times - 15 minutes",
+            "Organize the art supplies - 20 minutes", "Wash the back door - 15 minutes", "Collect 75 small pebbles - 30 minutes",
+            "Clean the kitchen stools - 15 minutes", "Write a 100-word essay on gratitude - 1 hour"
+        ];
         
         // --- History Management ---
         function getHistory() {
@@ -291,51 +270,32 @@
             return history ? JSON.parse(history) : [];
         }
 
-        function saveToHistory(punishmentId) {
+        function saveToHistory(sentence) {
             const history = getHistory();
-            history.push({ id: punishmentId, timestamp: Date.now() });
+            history.push({ sentence: sentence, timestamp: Date.now() });
             localStorage.setItem(PUNISHMENT_HISTORY_KEY, JSON.stringify(history));
         }
 
-        function getAvailablePunishments(type) {
+        function generateRandomPunishment() {
             let history = getHistory();
             const now = Date.now();
             
             const recentHistory = history.filter(item => (now - item.timestamp) < SEVEN_DAYS_IN_MS);
             localStorage.setItem(PUNISHMENT_HISTORY_KEY, JSON.stringify(recentHistory));
 
-            const recentIds = recentHistory.map(item => item.id);
-            const fullList = masterPunishmentList[type];
-
-            const availableList = fullList.filter(p => !recentIds.includes(p.id));
-
+            const recentSentences = recentHistory.map(item => item.sentence);
+            const availableList = masterPunishmentList.filter(p => !recentSentences.includes(p));
+            
+            let sentence;
             if (availableList.length === 0) {
-                const otherHistory = recentHistory.filter(item => !item.id.startsWith(type.charAt(0)));
-                localStorage.setItem(PUNISHMENT_HISTORY_KEY, JSON.stringify(otherHistory));
-                console.log(`Resetting ${type} punishments.`);
-                return fullList;
-            }
-
-            return availableList;
-        }
-
-
-        function generatePunishment(type) {
-            const available = getAvailablePunishments(type);
-            const p = available[Math.floor(Math.random() * available.length)];
-            
-            saveToHistory(p.id);
-
-            let sentence, data;
-            if (type === 'chore') {
-                sentence = `${p.task} ${p.location} ${p.condition}`;
-                data = p;
+                console.log("Resetting punishments.");
+                sentence = masterPunishmentList[Math.floor(Math.random() * masterPunishmentList.length)];
             } else {
-                sentence = p.sentence;
-                data = p;
+                sentence = availableList[Math.floor(Math.random() * availableList.length)];
             }
             
-            return { sentence, data };
+            saveToHistory(sentence);
+            return sentence;
         }
 
         // --- Navigation ---
@@ -352,43 +312,25 @@
         // --- Wheel Logic ---
         const wheel = document.getElementById('wheel'), spinButton = document.getElementById('spinButton'), wheelResultContainer = document.getElementById('wheelResultContainer');
         const wheelCategories = [ 
-            { label: 'Chore', color: '#FF6B6B', type: 'chore' }, { label: 'Tech Ban', color: '#FFD166', type: 'tech' }, 
-            { label: 'Deterrent', color: '#06D6A0', type: 'deterrent' }, { label: 'Chore', color: '#118AB2', type: 'chore' }, 
-            { label: 'Tech Ban', color: '#E07A5F', type: 'tech' }, { label: 'Deterrent', color: '#3D405B', type: 'deterrent' }, 
-            { label: 'Chore', color: '#F2CC8F', type: 'chore' }, { label: 'Tech Ban', color: '#81B29A', type: 'tech' },
-            { label: 'Deterrent', color: '#F781C6', type: 'deterrent' }, { label: 'Chore', color: '#736CED', type: 'chore' },
-            { label: 'Tech Ban', color: '#57C4E5', type: 'tech' }, { label: 'Deterrent', color: '#FCBF49', type: 'deterrent' },
+            { color: '#FF6B6B' }, { color: '#FFD166' }, { color: '#06D6A0' }, 
+            { color: '#118AB2' }, { color: '#E07A5F' }, { color: '#3D405B' },
+            { color: '#F2CC8F' }, { color: '#81B29A' }, { color: '#F781C6' }, 
+            { color: '#736CED' }, { color: '#57C4E5' }, { color: '#FCBF49' },
         ];
         let currentRotation = 0;
         function createWheel() {
             const sliceAngle = 360 / wheelCategories.length;
-            const skew = 90 - sliceAngle;
-
+            let gradientString = 'conic-gradient(';
             wheelCategories.forEach((cat, i) => {
-                const slice = document.createElement('div');
-                slice.className = 'slice';
-                slice.style.backgroundColor = cat.color;
-                slice.style.transform = `rotate(${i * sliceAngle}deg) skewY(${skew}deg)`;
-
-                const content = document.createElement('div');
-                content.className = 'slice-content';
-                content.style.transform = `skewX(${skew}deg) rotate(${sliceAngle / 2}deg)`;
-
-                const text = document.createElement('span');
-                text.className = 'slice-text';
-                text.textContent = cat.label;
-                content.appendChild(text);
-
-                const symbol = document.createElement('span');
-                symbol.className = 'slice-symbol';
-                symbol.textContent = '😢';
-                content.appendChild(symbol);
-                
-                slice.appendChild(content);
-                wheel.appendChild(slice);
+                const startAngle = i * sliceAngle;
+                const endAngle = (i + 1) * sliceAngle;
+                gradientString += `${cat.color} ${startAngle}deg ${endAngle}deg, `;
             });
+            gradientString = gradientString.slice(0, -2) + ')';
+            wheel.style.background = gradientString;
+            wheel.innerHTML = '<div class="wheel-text-container"><div class="wheel-text">?</div></div>';
         }
-        function spinWheel() { if(isSpinning)return;isSpinning=true;spinButton.disabled=true;spinButton.textContent='Spinning...';wheelResultContainer.innerHTML='';const f=Math.floor(Math.random()*3)+4,s=Math.floor(Math.random()*wheelCategories.length),a=360/wheelCategories.length;currentRotation+=f*360+s*a+a/2;wheel.style.transform=`rotate(${currentRotation}deg)`;setTimeout(()=>{const category = wheelCategories[s]; const result = generatePunishment(category.type); wheelResultContainer.innerHTML=`<p class="result-text">Justice has been served...</p><p class="result-value" style="font-weight: bold; color: black;">${result.sentence}</p>`;isSpinning=false;spinButton.disabled=false;spinButton.textContent='SPIN!'},4000) }
+        function spinWheel() { if(isSpinning)return;isSpinning=true;spinButton.disabled=true;spinButton.textContent='Spinning...';wheelResultContainer.innerHTML='';const f=Math.floor(Math.random()*3)+4,s=Math.floor(Math.random()*wheelCategories.length),a=360/wheelCategories.length;currentRotation+=f*360+s*a+a/2;wheel.style.transform=`rotate(${currentRotation}deg)`;setTimeout(()=>{const result = generateRandomPunishment(); wheelResultContainer.innerHTML=`<p class="result-text">Justice has been served...</p><p class="result-value">${result}</p>`;isSpinning=false;spinButton.disabled=false;spinButton.textContent='SPIN!'},4000) }
         
         // --- Slots to Make'em Sorry Logic ---
         const slotsButton=document.getElementById('slotsButton'), sorrySlotsResult = document.getElementById('sorrySlotsResult');
@@ -400,8 +342,7 @@
             slotsButton.textContent = "Generating...";
             sorrySlotsResult.textContent = "";
             
-            const result = generatePunishment('deterrent');
-            const targetText = result.sentence;
+            const targetText = generateRandomPunishment();
             let currentText = '';
             let intervalCount = 0;
 
@@ -433,72 +374,23 @@
 
         // --- Dice Roll Logic ---
         const die1=document.getElementById('die1'),die2=document.getElementById('die2'),die3=document.getElementById('die3'),die4=document.getElementById('die4'),diceButton=document.getElementById('diceButton'),diceResultContainer=document.getElementById('diceResultContainer');
-        
-        function createSymbolDieFace(symbol, faceIndex) {
-            const face = document.createElement('div');
-            face.className = `die-face face-${faceIndex}`;
-            face.innerHTML = `<div class="die-face-symbol">${symbol}</div>`;
-            return face;
-        }
-
-        function createWordDie(dieElement, items) {
-            dieElement.innerHTML = ''; // Clear previous faces
-            items.forEach((item, index) => {
-                if (item && index < 6) { 
-                    dieElement.appendChild(createSymbolDieFace(item.symbol, index + 1));
-                }
-            });
-        }
-
-        function setDieFace(dieElement, faceIndex) {
-            const rotations = {1:'rotateY(0deg)', 2:'rotateY(-90deg)', 3:'rotateY(-180deg)', 4:'rotateY(90deg)', 5:'rotateX(-90deg)', 6:'rotateX(90deg)'};
-            dieElement.style.transform = rotations[faceIndex];
-        }
-
-        function rollDice() {
-            if(isSpinning) return;
-            isSpinning=true;
-            diceButton.disabled=true;
-            diceButton.textContent='Rolling...';
-            diceResultContainer.innerHTML='';
-            const dice=[die1, die2, die3, die4];
-            dice.forEach(d=>d.classList.add('rolling'));
-            
-            setTimeout(() => {
-                dice.forEach(d=>d.classList.remove('rolling'));
-                const result = generatePunishment('chore');
-                const choreData = result.data;
-
-                setDieFace(die1, masterPunishmentList.chore.findIndex(p => p.id === choreData.id) + 1);
-                setDieFace(die2, masterPunishmentList.chore.findIndex(p => p.id === choreData.id) + 1);
-                setDieFace(die3, masterPunishmentList.chore.findIndex(p => p.id === choreData.id) + 1);
-                setDieFace(die4, masterPunishmentList.chore.findIndex(p => p.id === choreData.id) + 1);
-
-                diceResultContainer.innerHTML = `<p class="result-text">The dice have decided!</p><p class="result-value">${result.sentence}</p>`;
-                isSpinning=false;
-                diceButton.disabled=false;
-                diceButton.textContent='ROLL!';
-            }, 1500);
-        }
+        function createPipDieFace(faceValue) { const face=document.createElement('div'); face.className=`die-face face-${faceValue}`; for(let i=0;i<faceValue;i++) { const pip=document.createElement('div'); pip.className='pip'; face.appendChild(pip); } return face; }
+        function createPipDie(dieElement) { dieElement.innerHTML=''; for(let i=1;i<=6;i++) dieElement.appendChild(createPipDieFace(i)); }
+        function setDieFace(dieElement,faceIndex){const rotations={1:'rotateY(0deg)',2:'rotateY(-90deg)',3:'rotateY(-180deg)',4:'rotateY(90deg)',5:'rotateX(-90deg)',6:'rotateX(90deg)'};dieElement.style.transform=rotations[faceIndex];}
+        function rollDice(){if(isSpinning)return;isSpinning=true;diceButton.disabled=true;diceButton.textContent='Rolling...';diceResultContainer.innerHTML='';const dice=[die1,die2,die3,die4];dice.forEach(d=>d.classList.add('rolling'));setTimeout(()=>{dice.forEach(d=>d.classList.remove('rolling'));const result = generateRandomPunishment(); setDieFace(die1, Math.floor(Math.random()*6)+1); setDieFace(die2, Math.floor(Math.random()*6)+1); setDieFace(die3, Math.floor(Math.random()*6)+1); setDieFace(die4, Math.floor(Math.random()*6)+1); diceResultContainer.innerHTML=`<p class="result-text">The dice have decided!</p><p class="result-value">${result}</p>`;isSpinning=false;diceButton.disabled=false;diceButton.textContent='ROLL!';},1500);}
 
         // --- Initial Setup ---
         createWheel();
         spinButton.addEventListener('click', spinWheel);
         
         slotsButton.addEventListener('click', spinSorrySlots);
-        
-        const choreDiceActions = masterPunishmentList.chore.map(p => ({ symbol: p.symbol }));
-        const choreDiceObjects = masterPunishmentList.chore.map(p => ({ symbol: p.symbol }));
-        const choreDiceLocations = masterPunishmentList.chore.map(p => ({ symbol: '📍' }));
-        const choreDiceConditions = masterPunishmentList.chore.map(p => ({ symbol: '⏰' }));
 
-        createWordDie(die1, choreDiceActions);
-        createWordDie(die2, choreDiceObjects);
-        createWordDie(die3, choreDiceLocations);
-        createWordDie(die4, choreDiceConditions);
+        createPipDie(die1);
+        createPipDie(die2);
+        createPipDie(die3);
+        createPipDie(die4);
         diceButton.addEventListener('click', rollDice);
 
     </script>
 </body>
 </html>
-�

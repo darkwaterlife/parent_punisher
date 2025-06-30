@@ -134,19 +134,22 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
             padding: 10px;
             box-sizing: border-box;
         }
-        .pip { width: 18px; height: 18px; background-color: #333; border-radius: 50%; margin: 5px; }
-        .face-1 .pip:nth-child(n+2), .face-2 .pip:nth-child(n+3), .face-3 .pip:nth-child(n+4), .face-4 .pip:nth-child(n+5), .face-5 .pip:nth-child(n+6), .face-6 .pip:nth-child(n+7) { display: none; }
-        .face-2 .pip:nth-child(2) { align-self: flex-end; }
-        .face-3 .pip:nth-child(2) { align-self: center; }
-        .face-3 .pip:nth-child(3) { align-self: flex-end; }
-        .face-4 .pip:nth-child(2), .face-4 .pip:nth-child(4) { align-self: flex-end; }
-        .face-5 .pip:nth-child(3) { align-self: center; }
-        .face-5 .pip:nth-child(4), .face-5 .pip:nth-child(5) { align-self: flex-end; }
-        .face-6 .pip:nth-child(4), .face-6 .pip:nth-child(5), .face-6 .pip:nth-child(6) { align-self: flex-end; }
+        .die-face-symbol-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .die-face-symbol {
+            font-size: 32px;
+        }
+        .die-face-frown {
+            font-size: 18px;
+            margin-top: 4px;
+        }
         .face-1 { transform: rotateY(0deg) translateZ(40px); }
         .face-2 { transform: rotateY(90deg) translateZ(40px); }
         .face-3 { transform: rotateY(180deg) translateZ(40px); }
@@ -374,10 +377,54 @@
 
         // --- Dice Roll Logic ---
         const die1=document.getElementById('die1'),die2=document.getElementById('die2'),die3=document.getElementById('die3'),die4=document.getElementById('die4'),diceButton=document.getElementById('diceButton'),diceResultContainer=document.getElementById('diceResultContainer');
-        function createPipDieFace(faceValue) { const face=document.createElement('div'); face.className=`die-face face-${faceValue}`; for(let i=0;i<faceValue;i++) { const pip=document.createElement('div'); pip.className='pip'; face.appendChild(pip); } return face; }
-        function createPipDie(dieElement) { dieElement.innerHTML=''; for(let i=1;i<=6;i++) dieElement.appendChild(createPipDieFace(i)); }
+        const choreSymbols = ['🧼', '🧽', '🧸', '🍽️', '💨', '🧹', '💧', '🚽', '🛏️', '🐾', '🐶', '👞', '🌱', '🚗', '🏡', '📏', '🗑️', '💍'];
+        
+        function createSymbolDieFace(symbol, showFrown, faceIndex) {
+            const face = document.createElement('div');
+            face.className = `die-face face-${faceIndex}`;
+            const frownHTML = showFrown ? `<div class="die-face-frown">😟</div>` : '';
+            face.innerHTML = `<div class="die-face-symbol-container"><div class="die-face-symbol">${symbol}</div>${frownHTML}</div>`;
+            return face;
+        }
+
+        function createSymbolDie(dieElement, showFrown) {
+            dieElement.innerHTML = '';
+            for(let i = 1; i <= 6; i++) {
+                const randomSymbol = choreSymbols[Math.floor(Math.random() * choreSymbols.length)];
+                dieElement.appendChild(createSymbolDieFace(randomSymbol, showFrown, i));
+            }
+        }
+
         function setDieFace(dieElement,faceIndex){const rotations={1:'rotateY(0deg)',2:'rotateY(-90deg)',3:'rotateY(-180deg)',4:'rotateY(90deg)',5:'rotateX(-90deg)',6:'rotateX(90deg)'};dieElement.style.transform=rotations[faceIndex];}
-        function rollDice(){if(isSpinning)return;isSpinning=true;diceButton.disabled=true;diceButton.textContent='Rolling...';diceResultContainer.innerHTML='';const dice=[die1,die2,die3,die4];dice.forEach(d=>d.classList.add('rolling'));setTimeout(()=>{dice.forEach(d=>d.classList.remove('rolling'));const result = generateRandomPunishment(); setDieFace(die1, Math.floor(Math.random()*6)+1); setDieFace(die2, Math.floor(Math.random()*6)+1); setDieFace(die3, Math.floor(Math.random()*6)+1); setDieFace(die4, Math.floor(Math.random()*6)+1); diceResultContainer.innerHTML=`<p class="result-text">The dice have decided!</p><p class="result-value">${result}</p>`;isSpinning=false;diceButton.disabled=false;diceButton.textContent='ROLL!';},1500);}
+        
+        function rollDice(){
+            if(isSpinning)return;
+            isSpinning=true;
+            diceButton.disabled=true;
+            diceButton.textContent='Rolling...';
+            diceResultContainer.innerHTML='';
+            const dice=[die1,die2,die3,die4];
+
+            const showFrownyFace = Math.random() < 0.04; // 1 in 25 chance
+            dice.forEach(d => createSymbolDie(d, showFrownyFace));
+            
+            dice.forEach(d=>d.classList.add('rolling'));
+            
+            setTimeout(()=>{
+                dice.forEach(d=>d.classList.remove('rolling'));
+                const result = generateRandomPunishment();
+                
+                setDieFace(die1, Math.floor(Math.random()*6)+1); 
+                setDieFace(die2, Math.floor(Math.random()*6)+1); 
+                setDieFace(die3, Math.floor(Math.random()*6)+1); 
+                setDieFace(die4, Math.floor(Math.random()*6)+1); 
+
+                diceResultContainer.innerHTML=`<p class="result-text">The dice have decided!</p><p class="result-value">${result}</p>`;
+                isSpinning=false;
+                diceButton.disabled=false;
+                diceButton.textContent='ROLL!';
+            }, 1500);
+        }
 
         // --- Initial Setup ---
         createWheel();
@@ -385,10 +432,10 @@
         
         slotsButton.addEventListener('click', spinSorrySlots);
 
-        createPipDie(die1);
-        createPipDie(die2);
-        createPipDie(die3);
-        createPipDie(die4);
+        createSymbolDie(die1, false);
+        createSymbolDie(die2, false);
+        createSymbolDie(die3, false);
+        createSymbolDie(die4, false);
         diceButton.addEventListener('click', rollDice);
 
     </script>

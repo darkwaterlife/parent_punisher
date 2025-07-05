@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punishment Generator</title>
+    <style>
+        /* General Body Styling */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #F7F7F7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        /* Navigation Bar */
+        .nav {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 10px 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .nav-button {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .nav-button:hover {
+            background-color: #f0f0f0;
+        }
+        .nav-button.active {
+            color: #FF6B6B;
+            background-color: #ffefef;
+        }
+        .nav-button:disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Main container for the app */
+        .container {
+            padding: 20px;
+            max-width: 450px;
+            width: 100%;
+        }
+
+        /* Title and Subtitle styling */
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        
+        /* Game Mode Containers */
+        .game-mode {
+            display: none; /* Hide all modes by default */
+        }
+        .game-mode.active {
+            display: block; /* Show only the active mode */
+        }
+
+        /* --- Wheel Styles --- */
+        .wheel-container { width: 300px; height: 300px; margin: 0 auto 50px; position: relative; }
+        .pointer-container { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); z-index: 10; }
+        .pointer { width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #333333; }
+        .wheel {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 0 0 5px #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        /* --- Slot Machine / Writer Styles --- */
+        #sorrySlotsDisplay {
+            background-color: #222;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 100px;
+            margin-bottom: 40px;
+            border: 4px solid #555;
+            box-shadow: inset 0 0 10px #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        /* --- Dice Roll Styles --- */
+        .dice-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 40px; perspective: 1000px; }
+        .die-scene { width: 80px; height: 80px; }
+        .die-cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1.5s ease-out; }
+        .die-cube.rolling { animation: roll 1.5s ease-out; }
+        .die-face {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .die-face-symbol-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .die-face-symbol {
+            font-size: 32px;
+        }
+        .die-face-frown {
+            font-size: 18px;
+            margin-top: 4px;
+        }
+        .face-1 { transform: rotateY(0deg) translateZ(40px); }
+        .face-2 { transform: rotateY(90deg) translateZ(40px); }
+        .face-3 { transform: rotateY(180deg) translateZ(40px); }
+        .face-4 { transform: rotateY(-90deg) translateZ(40px); }
+        .face-5 { transform: rotateX(90deg) translateZ(40px); }
+        .face-6 { transform: rotateX(-90deg) translateZ(40px); }
+        @keyframes roll { from { transform: rotateX(0deg) rotateY(0deg); } to { transform: rotateX(720deg) rotateY(1080deg); } }
+
+        /* General Action Button */
+        .action-button { background-color: #FF6B6B; color: white; padding: 15px 50px; border-radius: 30px; font-size: 24px; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.1s; }
+        .action-button:active { transform: scale(0.98); }
+        .action-button:disabled { background-color: #BDBDBD; cursor: not-allowed; }
+
+        /* Container for the result text */
+        .result-container { margin-top: 30px; min-height: 80px; }
+        .result-text { font-size: 20px; color: #555; }
+        .result-value { font-size: 24px; font-weight: bold; margin-top: 10px; padding: 0 10px; }
+    </style>
+</head>
+<body>
+
+    <nav class="nav">
+        <button class="nav-button active" onclick="switchMode('wheel')">The Wheel of Justice</button>
+        <button class="nav-button" onclick="switchMode('slots')">Time To Pay The Piper</button>
+        <button class="nav-button" onclick="switchMode('dice')">Chore Dice</button>
+    </nav>
+
+    <div class="container">
+        
+        <!-- Spinning Wheel Mode -->
+        <div id="wheelMode" class="game-mode active">
+            <h1 class="title">The Wheel of Justice</h1><p class="subtitle">Spin for a random punishment!</p>
+            <div class="wheel-container">
+                <div class="pointer-container"><div class="pointer"></div></div>
+                <div id="wheel" class="wheel">?</div>
+            </div>
+            <button id="spinButton" class="action-button">SPIN!</button>
+            <div id="wheelResultContainer" class="result-container"></div>
+        </div>
+
+        <!-- Slot Machine / Deterrent Writer Mode -->
+        <div id="slotsMode" class="game-mode">
+            <h1 class="title">Time To Pay The Piper</h1><p class="subtitle">Push the button for a random punishment!</p>
+            <div id="sorrySlotsDisplay">
+                <p class="result-value" id="sorrySlotsResult"></p>
+            </div>
+            <button id="slotsButton" class="action-button">PUSH!</button>
+        </div>
+        
+        <!-- Dice Roll Mode -->
+        <div id="diceMode" class="game-mode">
+            <h1 class="title">Chore Dice</h1><p class="subtitle">Roll the dice for a random punishment!</p>
+            <div class="dice-container">
+                <div class="die-scene"><div class="die-cube" id="die1"></div></div>
+                <div class="die-scene"><div class="die-cube" id="die2"></div></div>
+                <div class="die-scene"><div class="die-cube" id="die3"></div></div>
+                <div class="die-scene"><div class="die-cube" id="die4"></div></div>
+            </div>
+            <button id="diceButton" class="action-button">ROLL!</button>
+            <div id="diceResultContainer" class="result-container"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Global State ---
+        let isSpinning = false;
+        const SEVEN_DAYS_IN_MS = 7 * 24 * 60 * 60 * 1000;
+        const PUNISHMENT_HISTORY_KEY = 'punishmentHistory';
+
+        // --- Master Punishment List ---
+        const masterPunishmentList = [
+            "Vacuum the living room - 30 minutes", "Dust the furniture - 20 minutes", "Mop the kitchen floor - 25 minutes",
+            "Mow the lawn - 1 hour", "Feed the pets - 15 minutes", "Write \"I will respect others\" 50 times - 30 minutes",
+            "Clean the bathroom sink - 15 minutes", "Organize the bookshelf - 45 minutes", "Sweep the porch - 20 minutes",
+            "Water the plants - 15 minutes", "Write a 100-word essay on kindness - 1 hour", "Wipe down kitchen counters - 15 minutes",
+            "Sort the recycling - 20 minutes", "Rake leaves in the yard - 1 hour", "Clean the windows - 30 minutes",
+            "Write \"I’m sorry for my actions\" 25 times - 15 minutes", "Wash the dishes - 30 minutes", "Dust the ceiling fans - 20 minutes",
+            "Pick up trash in the yard - 30 minutes", "Organize the toy box - 25 minutes", "Write a letter of apology - 45 minutes",
+            "Clean the refrigerator shelves - 30 minutes", "Sweep the garage - 25 minutes", "Pull weeds in the garden - 1 hour",
+            "Wipe down light switches - 15 minutes", "Write \"I will listen to instructions\" 50 times - 30 minutes", "Fold laundry - 30 minutes",
+            "Clean the pet’s bedding - 20 minutes", "Collect 100 blades of grass - 30 minutes", "Vacuum under furniture - 25 minutes",
+            "Write a 150-word essay on responsibility - 1 hour", "Dust the blinds - 20 minutes", "Water the lawn - 30 minutes",
+            "Organize the pantry - 30 minutes", "Clean the microwave - 15 minutes", "Write \"I will be honest\" 50 times - 30 minutes",
+            "Sweep the driveway - 20 minutes", "Wash the pet’s bowls - 15 minutes", "Pick up sticks in the yard - 30 minutes",
+            "Clean the baseboards - 25 minutes", "Write a letter about why you feel bad - 45 minutes", "Wipe down door handles - 15 minutes",
+            "Sort laundry by color - 20 minutes", "Rake the garden beds - 1 hour", "Clean the bathroom mirror - 15 minutes",
+            "Write \"I will be kind\" 25 times - 15 minutes", "Vacuum the stairs - 20 minutes", "Dust the picture frames - 15 minutes",
+            "Collect 50 small pebbles - 30 minutes", "Organize the shoe rack - 20 minutes", "Write a 100-word essay on respect - 1 hour",
+            "Clean the kitchen chairs - 20 minutes", "Sweep the patio - 25 minutes", "Water the flower beds - 30 minutes",
+            "Wipe down the TV stand - 15 minutes", "Write \"I will follow rules\" 50 times - 30 minutes", "Fold blankets in the living room - 20 minutes",
+            "Clean the pet’s toys - 15 minutes", "Pick up litter in the backyard - 30 minutes", "Dust the shelves - 20 minutes",
+            "Write a letter to a family member about gratitude - 45 minutes", "Vacuum the car interior - 30 minutes", "Sweep the front walkway - 20 minutes",
+            "Pull weeds from the driveway cracks - 1 hour", "Clean the dining table - 15 minutes", "Write \"I will be responsible\" 25 times - 15 minutes",
+            "Organize the coat closet - 25 minutes", "Wash the front door - 15 minutes", "Collect 75 blades of grass - 30 minutes",
+            "Wipe down the kitchen appliances - 20 minutes", "Write a 150-word essay on honesty - 1 hour", "Dust the lampshades - 15 minutes",
+            "Water the shrubs - 30 minutes", "Clean the bathroom countertop - 15 minutes", "Write \"I’m sorry for not listening\" 50 times - 30 minutes",
+            "Sweep the basement floor - 25 minutes", "Organize the game cupboard - 20 minutes", "Pick up pinecones in the yard - 30 minutes",
+            "Clean the pet’s crate - 20 minutes", "Write a letter about why you value family - 45 minutes", "Vacuum the bedroom - 20 minutes",
+            "Dust the window sills - 15 minutes", "Rake the front yard - 1 hour", "Wipe down the staircase railing - 15 minutes",
+            "Write \"I will be respectful\" 25 times - 15 minutes", "Organize the craft supplies - 25 minutes", "Wash the patio furniture - 30 minutes",
+            "Collect 50 twigs - 30 minutes", "Clean the kitchen sink - 15 minutes", "Write a 100-word essay on teamwork - 1 hour",
+            "Sweep the back porch - 20 minutes", "Dust the TV screen - 15 minutes", "Water the vegetable garden - 30 minutes",
+            "Organize the desk - 20 minutes", "Write \"I will be patient\" 50 times - 30 minutes", "Clean the bathroom floor - 20 minutes",
+            "Pick up leaves in the driveway - 30 minutes", "Wipe down the refrigerator door - 15 minutes", "Write a letter about why you’re sorry - 45 minutes",
+            "Vacuum the hallway - 20 minutes", "Dust the books - 15 minutes", "Pull weeds in the front yard - 1 hour",
+            "Clean the light fixtures - 20 minutes", "Write \"I will be helpful\" 25 times - 15 minutes", "Organize the garage tools - 25 minutes",
+            "Wash the windowsills - 20 minutes", "Collect 100 small stones - 30 minutes", "Wipe down the kitchen table - 15 minutes",
+            "Write a 150-word essay on patience - 1 hour", "Sweep the deck - 20 minutes", "Dust the mantle - 15 minutes",
+            "Water the trees - 30 minutes", "Clean the pet’s water bowl - 15 minutes", "Write \"I will be kind to others\" 50 times - 30 minutes",
+            "Organize the linen closet - 25 minutes", "Pick up trash around the mailbox - 20 minutes", "Clean the bathroom tiles - 20 minutes",
+            "Write a letter about why you respect rules - 45 minutes", "Vacuum the dining room - 20 minutes", "Dust the air vents - 15 minutes",
+            "Rake the backyard - 1 hour", "Wipe down the pantry shelves - 20 minutes", "Write \"I’m sorry for being rude\" 25 times - 15 minutes",
+            "Organize the art supplies - 20 minutes", "Wash the back door - 15 minutes", "Collect 75 small pebbles - 30 minutes",
+            "Clean the kitchen stools - 15 minutes", "Write a 100-word essay on gratitude - 1 hour"
+        ];
+        
+        // --- History Management ---
+        function getHistory() {
+            const history = localStorage.getItem(PUNISHMENT_HISTORY_KEY);
+            return history ? JSON.parse(history) : [];
+        }
+
+        function saveToHistory(sentence) {
+            const history = getHistory();
+            history.push({ sentence: sentence, timestamp: Date.now() });
+            localStorage.setItem(PUNISHMENT_HISTORY_KEY, JSON.stringify(history));
+        }
+
+        function generateRandomPunishment() {
+            let history = getHistory();
+            const now = Date.now();
+            
+            const recentHistory = history.filter(item => (now - item.timestamp) < SEVEN_DAYS_IN_MS);
+            localStorage.setItem(PUNISHMENT_HISTORY_KEY, JSON.stringify(recentHistory));
+
+            const recentSentences = recentHistory.map(item => item.sentence);
+            const availableList = masterPunishmentList.filter(p => !recentSentences.includes(p));
+            
+            let sentence;
+            if (availableList.length === 0) {
+                console.log("Resetting punishments.");
+                sentence = masterPunishmentList[Math.floor(Math.random() * masterPunishmentList.length)];
+            } else {
+                sentence = availableList[Math.floor(Math.random() * availableList.length)];
+            }
+            
+            saveToHistory(sentence);
+            return sentence;
+        }
+
+        // --- Navigation ---
+        const navButtons = document.querySelectorAll('.nav-button');
+        const gameModes = document.querySelectorAll('.game-mode');
+        function switchMode(mode) {
+            if(isSpinning) return;
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.nav-button[onclick="switchMode('${mode}')"]`).classList.add('active');
+            gameModes.forEach(m => m.classList.remove('active'));
+            document.getElementById(`${mode}Mode`).classList.add('active');
+        }
+
+        // --- Wheel Logic ---
+        const wheel = document.getElementById('wheel'), spinButton = document.getElementById('spinButton'), wheelResultContainer = document.getElementById('wheelResultContainer');
+        const wheelCategories = [ 
+            { color: '#FF6B6B' }, { color: '#FFD166' }, { color: '#06D6A0' }, 
+            { color: '#118AB2' }, { color: '#E07A5F' }, { color: '#3D405B' },
+            { color: '#F2CC8F' }, { color: '#81B29A' }, { color: '#F781C6' }, 
+            { color: '#736CED' }, { color: '#57C4E5' }, { color: '#FCBF49' },
+        ];
+        let currentRotation = 0;
+        function createWheel() {
+            const sliceAngle = 360 / wheelCategories.length;
+            let gradientString = 'conic-gradient(';
+            wheelCategories.forEach((cat, i) => {
+                const startAngle = i * sliceAngle;
+                const endAngle = (i + 1) * sliceAngle;
+                gradientString += `${cat.color} ${startAngle}deg ${endAngle}deg, `;
+            });
+            gradientString = gradientString.slice(0, -2) + ')';
+            wheel.style.background = gradientString;
+            wheel.innerHTML = '<div class="wheel-text-container"><div class="wheel-text">?</div></div>';
+        }
+        function spinWheel() { if(isSpinning)return;isSpinning=true;spinButton.disabled=true;spinButton.textContent='Spinning...';wheelResultContainer.innerHTML='';const f=Math.floor(Math.random()*3)+4,s=Math.floor(Math.random()*wheelCategories.length),a=360/wheelCategories.length;currentRotation+=f*360+s*a+a/2;wheel.style.transform=`rotate(${currentRotation}deg)`;setTimeout(()=>{const result = generateRandomPunishment(); wheelResultContainer.innerHTML=`<p class="result-text">Justice has been served...</p><p class="result-value">${result}</p>`;isSpinning=false;spinButton.disabled=false;spinButton.textContent='SPIN!'},4000) }
+        
+        // --- Slots to Make'em Sorry Logic ---
+        const slotsButton=document.getElementById('slotsButton'), sorrySlotsResult = document.getElementById('sorrySlotsResult');
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+        function spinSorrySlots() {
+            if(isSpinning) return;
+            isSpinning = true;
+            slotsButton.disabled = true;
+            slotsButton.textContent = "Generating...";
+            sorrySlotsResult.textContent = "";
+            
+            const targetText = generateRandomPunishment();
+            let currentText = '';
+            let intervalCount = 0;
+
+            const scrambleInterval = setInterval(() => {
+                let scrambledText = '';
+                for(let i = 0; i < targetText.length; i++) {
+                    if (i < currentText.length) {
+                        scrambledText += targetText[i];
+                    } else {
+                        scrambledText += chars[Math.floor(Math.random() * chars.length)];
+                    }
+                }
+                sorrySlotsResult.textContent = scrambledText;
+            }, 50);
+
+            const revealInterval = setInterval(() => {
+                currentText += targetText[intervalCount] || '';
+                intervalCount++;
+                if (intervalCount > targetText.length) {
+                    clearInterval(scrambleInterval);
+                    clearInterval(revealInterval);
+                    sorrySlotsResult.textContent = targetText;
+                    isSpinning = false;
+                    slotsButton.disabled = false;
+                    slotsButton.textContent = 'PUSH!';
+                }
+            }, 30);
+        }
+
+        // --- Dice Roll Logic ---
+        const die1=document.getElementById('die1'),die2=document.getElementById('die2'),die3=document.getElementById('die3'),die4=document.getElementById('die4'),diceButton=document.getElementById('diceButton'),diceResultContainer=document.getElementById('diceResultContainer');
+        const choreSymbols = ['🧼', '🧽', '🧸', '🍽️', '💨', '🧹', '💧', '🚽', '🛏️', '🐾', '🐶', '👞', '🌱', '🚗', '🏡', '📏', '🗑️', '💍'];
+        
+        function createSymbolDieFace(symbol, showFrown, faceIndex) {
+            const face = document.createElement('div');
+            face.className = `die-face face-${faceIndex}`;
+            const frownHTML = showFrown ? `<div class="die-face-frown">😟</div>` : '';
+            face.innerHTML = `<div class="die-face-symbol-container"><div class="die-face-symbol">${symbol}</div>${frownHTML}</div>`;
+            return face;
+        }
+
+        function createSymbolDie(dieElement, showFrown) {
+            dieElement.innerHTML = '';
+            for(let i = 1; i <= 6; i++) {
+                const randomSymbol = choreSymbols[Math.floor(Math.random() * choreSymbols.length)];
+                dieElement.appendChild(createSymbolDieFace(randomSymbol, showFrown, i));
+            }
+        }
+
+        function setDieFace(dieElement,faceIndex){const rotations={1:'rotateY(0deg)',2:'rotateY(-90deg)',3:'rotateY(-180deg)',4:'rotateY(90deg)',5:'rotateX(-90deg)',6:'rotateX(90deg)'};dieElement.style.transform=rotations[faceIndex];}
+        
+        function rollDice(){
+            if(isSpinning)return;
+            isSpinning=true;
+            diceButton.disabled=true;
+            diceButton.textContent='Rolling...';
+            diceResultContainer.innerHTML='';
+            const dice=[die1,die2,die3,die4];
+
+            const showFrownyFace = Math.random() < 0.04; // 1 in 25 chance
+            dice.forEach(d => createSymbolDie(d, showFrownyFace));
+            
+            dice.forEach(d=>d.classList.add('rolling'));
+            
+            setTimeout(()=>{
+                dice.forEach(d=>d.classList.remove('rolling'));
+                const result = generateRandomPunishment();
+                
+                setDieFace(die1, Math.floor(Math.random()*6)+1); 
+                setDieFace(die2, Math.floor(Math.random()*6)+1); 
+                setDieFace(die3, Math.floor(Math.random()*6)+1); 
+                setDieFace(die4, Math.floor(Math.random()*6)+1); 
+
+                diceResultContainer.innerHTML=`<p class="result-text">The dice have decided!</p><p class="result-value">${result}</p>`;
+                isSpinning=false;
+                diceButton.disabled=false;
+                diceButton.textContent='ROLL!';
+            }, 1500);
+        }
+
+        // --- Initial Setup ---
+        createWheel();
+        spinButton.addEventListener('click', spinWheel);
+        
+        slotsButton.addEventListener('click', spinSorrySlots);
+
+        createSymbolDie(die1, false);
+        createSymbolDie(die2, false);
+        createSymbolDie(die3, false);
+        createSymbolDie(die4, false);
+        diceButton.addEventListener('click', rollDice);
+
+    </script>
+</body>
+</html>

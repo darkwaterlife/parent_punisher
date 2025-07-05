@@ -134,19 +134,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
-            padding: 10px;
-            box-sizing: border-box;
+            font-size: 36px;
         }
-        .pip { width: 18px; height: 18px; background-color: #333; border-radius: 50%; margin: 5px; }
-        .face-1 .pip:nth-child(n+2), .face-2 .pip:nth-child(n+3), .face-3 .pip:nth-child(n+4), .face-4 .pip:nth-child(n+5), .face-5 .pip:nth-child(n+6), .face-6 .pip:nth-child(n+7) { display: none; }
-        .face-2 .pip:nth-child(2) { align-self: flex-end; }
-        .face-3 .pip:nth-child(2) { align-self: center; }
-        .face-3 .pip:nth-child(3) { align-self: flex-end; }
-        .face-4 .pip:nth-child(2), .face-4 .pip:nth-child(4) { align-self: flex-end; }
-        .face-5 .pip:nth-child(3) { align-self: center; }
-        .face-5 .pip:nth-child(4), .face-5 .pip:nth-child(5) { align-self: flex-end; }
-        .face-6 .pip:nth-child(4), .face-6 .pip:nth-child(5), .face-6 .pip:nth-child(6) { align-self: flex-end; }
         .face-1 { transform: rotateY(0deg) translateZ(40px); }
         .face-2 { transform: rotateY(90deg) translateZ(40px); }
         .face-3 { transform: rotateY(180deg) translateZ(40px); }
@@ -246,14 +235,14 @@
             "Rake the side garden", "Wipe down the kitchen cabinets with a damp rag", "Read a 3-page chapter from a kids’ adventure book and summarize in 25 words",
             "Vacuum the car trunk", "Clean the bathroom light switch with a damp cloth", "Pull weeds in the backyard",
             "Wipe down the stove with a microfiber cloth", "Dust the wall clocks in the house with a soft brush", "Organize the toy trains by size",
-            "No phone use until tomorrow", "Polish the car rims with a polishing cloth", "Wipe down the TV remote with a damp cloth",
-            "Copy a short description from a kids’ TV show guide", "Dust the TV stand with a microfiber cloth", "No streaming shows until tomorrow",
-            "No tablet use until tomorrow", "No social media access until tomorrow while writing the numbers 1 to 25 sequentially", "Vacuum under the TV console",
-            "No smartwatch use until tomorrow", "No streaming movies until tomorrow", "Clean the TV remote buttons with a damp swab",
+            "No screen time until tomorrow", "Polish the car rims with a polishing cloth", "Wipe down the TV remote with a damp cloth",
+            "Copy a short description from a kids’ TV show guide", "Dust the TV stand with a microfiber cloth", "No screen time until tomorrow",
+            "No screen time until tomorrow", "No screen time until tomorrow while writing the numbers 1 to 25 sequentially", "Vacuum under the TV console",
+            "No screen time until tomorrow", "No screen time until tomorrow", "Clean the TV remote buttons with a damp swab",
             "Dust the gaming console with a microfiber cloth", "Wipe down the TV speakers with a damp cloth", "Clean the laptop keyboard with a soft brush",
-            "No streaming music until tomorrow", "No streaming shows until tomorrow while writing the numbers 25 to 1 backwards", "Dust the TV cabinet",
+            "No screen time until tomorrow", "No screen time until tomorrow while writing the numbers 25 to 1 backwards", "Dust the TV cabinet",
             "Wash the pet’s bedding with mild detergent", "Dust the TV mount with a microfiber duster", "Clean the laundry room counter with a damp cloth",
-            "Dust the bedroom dresser with a soft cloth", "Clean the pet’s crate with a damp sponge", "No streaming shows until tomorrow while writing the numbers 50 to 1 backwards",
+            "Dust the bedroom dresser with a soft cloth", "Clean the pet’s crate with a damp sponge", "No screen time until tomorrow while writing the numbers 50 to 1 backwards",
             "Vacuum the dining room floor", "Clean the bathroom shower with a scrub brush", "Wipe down all interior door knobs with a damp cloth",
             "Organize the garage shelves by item type", "Read a 4-page article from a kids’ science magazine and summarize in 25 words", "Mop the living room floor",
             "Wipe down the laundry room counter", "Read a 3-page story from a kids’ book and summarize in 25 words", "Dust the dining room table with a microfiber cloth",
@@ -385,10 +374,54 @@
 
         // --- Dice Roll Logic ---
         const die1=document.getElementById('die1'),die2=document.getElementById('die2'),die3=document.getElementById('die3'),die4=document.getElementById('die4'),diceButton=document.getElementById('diceButton'),diceResultContainer=document.getElementById('diceResultContainer');
-        function createPipDieFace(faceValue) { const face=document.createElement('div'); face.className=`die-face face-${faceValue}`; for(let i=0;i<faceValue;i++) { const pip=document.createElement('div'); pip.className='pip'; face.appendChild(pip); } return face; }
-        function createPipDie(dieElement) { dieElement.innerHTML=''; for(let i=1;i<=6;i++) dieElement.appendChild(createPipDieFace(i)); }
+        const choreSymbols = ['🧼', '🧽', '🧸', '🍽️', '💨', '🧹', '💧', '🚽', '🛏️', '🐾', '🐶', '👞', '🌱', '🚗', '🏡', '📏', '🗑️', '💍', '✏️'];
+        
+        function createSymbolDieFace(symbol, showFrown, faceIndex) {
+            const face = document.createElement('div');
+            face.className = `die-face face-${faceIndex}`;
+            const frownHTML = showFrown ? `<div class="die-face-frown">😟</div>` : '';
+            face.innerHTML = `<div class="die-face-symbol-container"><div class="die-face-symbol">${symbol}</div>${frownHTML}</div>`;
+            return face;
+        }
+
+        function createSymbolDie(dieElement, showFrown) {
+            dieElement.innerHTML = '';
+            for(let i = 1; i <= 6; i++) {
+                const randomSymbol = choreSymbols[Math.floor(Math.random() * choreSymbols.length)];
+                dieElement.appendChild(createSymbolDieFace(randomSymbol, showFrown, i));
+            }
+        }
+
         function setDieFace(dieElement,faceIndex){const rotations={1:'rotateY(0deg)',2:'rotateY(-90deg)',3:'rotateY(-180deg)',4:'rotateY(90deg)',5:'rotateX(-90deg)',6:'rotateX(90deg)'};dieElement.style.transform=rotations[faceIndex];}
-        function rollDice(){if(isSpinning)return;isSpinning=true;diceButton.disabled=true;diceButton.textContent='Rolling...';diceResultContainer.innerHTML='';const dice=[die1,die2,die3,die4];dice.forEach(d=>d.classList.add('rolling'));setTimeout(()=>{dice.forEach(d=>d.classList.remove('rolling'));const result = generateRandomPunishment(); setDieFace(die1, Math.floor(Math.random()*6)+1); setDieFace(die2, Math.floor(Math.random()*6)+1); setDieFace(die3, Math.floor(Math.random()*6)+1); setDieFace(die4, Math.floor(Math.random()*6)+1); diceResultContainer.innerHTML=`<p class="result-text">The dice have decided!</p><p class="result-value">${result}</p>`;isSpinning=false;diceButton.disabled=false;diceButton.textContent='ROLL!';},1500);}
+        
+        function rollDice(){
+            if(isSpinning)return;
+            isSpinning=true;
+            diceButton.disabled=true;
+            diceButton.textContent='Rolling...';
+            diceResultContainer.innerHTML='';
+            const dice=[die1,die2,die3,die4];
+
+            const showFrownyFace = Math.random() < 0.04; // 1 in 25 chance
+            dice.forEach(d => createSymbolDie(d, showFrownyFace));
+            
+            dice.forEach(d=>d.classList.add('rolling'));
+            
+            setTimeout(()=>{
+                dice.forEach(d=>d.classList.remove('rolling'));
+                const result = generateRandomPunishment();
+                
+                setDieFace(die1, Math.floor(Math.random()*6)+1); 
+                setDieFace(die2, Math.floor(Math.random()*6)+1); 
+                setDieFace(die3, Math.floor(Math.random()*6)+1); 
+                setDieFace(die4, Math.floor(Math.random()*6)+1); 
+
+                diceResultContainer.innerHTML=`<p class="result-text">The dice have decided!</p><p class="result-value">${result}</p>`;
+                isSpinning=false;
+                diceButton.disabled=false;
+                diceButton.textContent='ROLL!';
+            }, 1500);
+        }
 
         // --- Initial Setup ---
         createWheel();
@@ -396,10 +429,10 @@
         
         slotsButton.addEventListener('click', spinSorrySlots);
 
-        createPipDie(die1);
-        createPipDie(die2);
-        createPipDie(die3);
-        createPipDie(die4);
+        createSymbolDie(die1, false);
+        createSymbolDie(die2, false);
+        createSymbolDie(die3, false);
+        createSymbolDie(die4, false);
         diceButton.addEventListener('click', rollDice);
 
     </script>

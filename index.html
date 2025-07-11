@@ -8,92 +8,117 @@
         /* General Body Styling */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #F7F7F7;
+            background-color: #f0f2f5;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             min-height: 100vh;
             margin: 0;
-            text-align: center;
         }
 
         /* Navigation Bar */
         .nav {
             background-color: #fff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 10px 20px;
+            padding: 10px 0;
             width: 100%;
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 5px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         .nav-button {
             background: none;
             border: none;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
-            color: #666;
+            color: #555;
             cursor: pointer;
-            padding: 10px 15px;
+            padding: 10px 12px;
             border-radius: 8px;
             transition: background-color 0.3s, color 0.3s;
         }
-        .nav-button:hover {
-            background-color: #f0f0f0;
-        }
         .nav-button.active {
-            color: #FF6B6B;
-            background-color: #ffefef;
-        }
-        .nav-button:disabled {
-            color: #ccc;
-            cursor: not-allowed;
+            color: #fff;
+            background-color: #e74c3c;
         }
 
         /* Main container for the app */
         .container {
             padding: 20px;
-            max-width: 450px;
+            max-width: 500px;
             width: 100%;
+            text-align: center;
         }
 
         /* Title and Subtitle styling */
         .title {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             color: #333;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .subtitle {
-            font-size: 18px;
+            font-size: 16px;
             color: #666;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
         
-        /* Game Mode Containers */
-        .game-mode {
-            display: none; /* Hide all modes by default */
+        .game-mode { display: none; }
+        .game-mode.active { display: block; }
+
+        /* Age Selector Styles */
+        .age-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
         }
-        .game-mode.active {
-            display: block; /* Show only the active mode */
+        .age-selector-label {
+            font-weight: 600;
+            color: #555;
+            margin-right: 5px;
+        }
+        .age-button {
+            background-color: #ddd;
+            border: 2px solid transparent;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .age-button.selected {
+            background-color: #3498db;
+            color: white;
+            border-color: #2980b9;
         }
 
         /* --- Wheel Styles --- */
-        .wheel-container { width: 300px; height: 300px; margin: 0 auto 50px; position: relative; }
+        .wheel-container { 
+            width: 70vw; 
+            height: 70vw; 
+            max-width: 300px;
+            max-height: 300px;
+            margin: 0 auto 20px; 
+            position: relative; 
+        }
         .pointer-container { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); z-index: 10; }
         .pointer { width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #333333; }
         .wheel {
-            width: 300px;
-            height: 300px;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             position: relative;
             overflow: hidden;
             transition: transform 4s cubic-bezier(0.23, 1, 0.32, 1);
-            box-shadow: 0 0 0 5px #444;
+            box-shadow: 0 0 0 5px #444, 0 0 15px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -145,14 +170,32 @@
         @keyframes roll { from { transform: rotateX(0deg) rotateY(0deg); } to { transform: rotateX(720deg) rotateY(1080deg); } }
 
         /* General Action Button */
-        .action-button { background-color: #FF6B6B; color: white; padding: 15px 50px; border-radius: 30px; font-size: 24px; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.1s; }
+        .action-button { 
+            background: linear-gradient(145deg, #FF6B6B, #e74c3c);
+            color: white; 
+            padding: 15px 50px; 
+            border-radius: 30px; 
+            font-size: 24px; 
+            font-weight: bold; 
+            border: none; 
+            cursor: pointer; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+            transition: background-color 0.3s, transform 0.1s; 
+        }
         .action-button:active { transform: scale(0.98); }
-        .action-button:disabled { background-color: #BDBDBD; cursor: not-allowed; }
+        .action-button:disabled { background: #BDBDBD; cursor: not-allowed; }
 
         /* Container for the result text */
-        .result-container { margin-top: 30px; min-height: 80px; }
-        .result-text { font-size: 20px; color: #555; }
-        .result-value { font-size: 24px; font-weight: bold; margin-top: 10px; padding: 0 10px; }
+        .result-container { 
+            margin-top: 20px; 
+            min-height: 80px; 
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .result-text { font-size: 18px; color: #555; margin-bottom: 10px;}
+        .result-value { font-size: 22px; font-weight: bold; padding: 0 10px; }
     </style>
 </head>
 <body>
@@ -168,17 +211,34 @@
         <!-- Spinning Wheel Mode -->
         <div id="wheelMode" class="game-mode active">
             <h1 class="title">The Wheel of Justice</h1><p class="subtitle">Spin for a random punishment!</p>
+            <div class="age-selector">
+                <span class="age-selector-label">Age Range:</span>
+                <button class="age-button selected" data-age="3-5">3-5</button>
+                <button class="age-button" data-age="6-8">6-8</button>
+                <button class="age-button" data-age="9-11">9-11</button>
+                <button class="age-button" data-age="12-13">12-13</button>
+            </div>
             <div class="wheel-container">
                 <div class="pointer-container"><div class="pointer"></div></div>
                 <div id="wheel" class="wheel">?</div>
             </div>
             <button id="spinButton" class="action-button">SPIN!</button>
-            <div id="wheelResultContainer" class="result-container"></div>
+            <div id="wheelResultContainer" class="result-container" style="display: none;">
+                <p class="result-text">Justice has been served...</p>
+                <p class="result-value" id="wheelResult"></p>
+            </div>
         </div>
 
         <!-- Slot Machine / Deterrent Writer Mode -->
         <div id="slotsMode" class="game-mode">
             <h1 class="title">Time To Pay The Piper</h1><p class="subtitle">Push the button for a random punishment!</p>
+             <div class="age-selector">
+                <span class="age-selector-label">Age Range:</span>
+                <button class="age-button selected" data-age="3-5">3-5</button>
+                <button class="age-button" data-age="6-8">6-8</button>
+                <button class="age-button" data-age="9-11">9-11</button>
+                <button class="age-button" data-age="12-13">12-13</button>
+            </div>
             <div id="sorrySlotsDisplay">
                 <p class="result-value" id="sorrySlotsResult"></p>
             </div>
@@ -188,6 +248,13 @@
         <!-- Dice Roll Mode -->
         <div id="diceMode" class="game-mode">
             <h1 class="title">Chore Dice</h1><p class="subtitle">Roll the dice for a random punishment!</p>
+             <div class="age-selector">
+                <span class="age-selector-label">Age Range:</span>
+                <button class="age-button selected" data-age="3-5">3-5</button>
+                <button class="age-button" data-age="6-8">6-8</button>
+                <button class="age-button" data-age="9-11">9-11</button>
+                <button class="age-button" data-age="12-13">12-13</button>
+            </div>
             <div class="dice-container">
                 <div class="die-scene"><div class="die-cube" id="die1"></div></div>
                 <div class="die-scene"><div class="die-cube" id="die2"></div></div>
@@ -195,246 +262,293 @@
                 <div class="die-scene"><div class="die-cube" id="die4"></div></div>
             </div>
             <button id="diceButton" class="action-button">ROLL!</button>
-            <div id="diceResultContainer" class="result-container"></div>
+            <div id="diceResultContainer" class="result-container" style="display: none;">
+                <p class="result-text">The dice have decided!</p>
+                <p class="result-value" id="diceResult"></p>
+            </div>
         </div>
-
     </div>
 
     <script>
-        // --- Global State ---
-        let isSpinning = false;
-        const SEVEN_DAYS_IN_MS = 7 * 24 * 60 * 60 * 1000;
-        const PUNISHMENT_HISTORY_KEY = 'punishmentHistory';
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Global State ---
+            let isSpinning = false;
+            let currentAgeRange = '3-5';
+            const SEVEN_DAYS_IN_MS = 7 * 24 * 60 * 60 * 1000;
+            const PUNISHMENT_HISTORY_KEY = 'punishmentHistory';
+            let audioContext;
+            let wheelSoundBuffer, resultSoundBuffer, diceSoundBuffer, slotScrambleSoundBuffer, slotSuccessSoundBuffer;
+            let currentRotation = 0;
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
 
-        // --- Master Punishment List ---
-        const masterPunishmentList = [
-            "Wash the car with a sponge", "Write the numbers 1 to 25 sequentially", "Sweep the driveway",
-            "Dust the living room shelves with a microfiber cloth", "Water the front lawn", "Clean the kitchen countertops with a damp cloth",
-            "Read a 3-page story from a children’s book and summarize in 25 words", "Rake leaves in the backyard", "Organize the garage tools by type",
-            "Wipe down the car windows with a microfiber cloth", "Write the numbers 25 to 1 backwards", "Vacuum the car seats",
-            "Pull weeds in the garden", "Clean the bathroom sink with a soft sponge", "Copy a short paragraph from a kids’ magazine",
-            "Sweep the front porch", "Dust the ceiling fans with a long pole duster", "Water the backyard plants",
-            "Organize the pantry by snack type", "Write the numbers 1 to 50 sequentially", "Wash the car tires with a scrub brush",
-            "Clean the pet’s water bowl", "Pick up sticks in the front yard", "Wipe down the kitchen appliances with a damp cloth",
-            "Read a 4-page article from National Geographic Kids and summarize in 25 words", "Rake the side yard", "Dust the picture frames with a soft cloth",
-            "Water the flower beds", "Organize the toy box by color", "Write the numbers 50 to 1 backwards",
-            "Vacuum the bedroom carpet", "Clean the bathroom mirror with a glass cleaner", "Pick up trash in the backyard",
-            "Wipe down the car dashboard with a damp towel", "Sweep the back porch", "Dust the blinds in the living room with a microfiber cloth",
-            "Water the front plants", "Organize the laundry room shelves by item type", "Write the numbers 1 to 25 sequentially while humming a tune",
-            "Wash the car bumper with a soft sponge", "Clean the kitchen sink with a scrub pad", "Rake the front lawn",
-            "Dust the bedroom nightstands with a soft brush", "Pick up leaves in the side yard", "Wipe down the bathroom faucet with a cloth",
-            "Water the garden shrubs", "Organize the school supplies by size", "Vacuum the car floor mats",
-            "Clean the pet’s food bowl", "Pull weeds in the front yard", "Wipe down the kitchen table with a damp rag",
-            "Dust the light fixtures in the dining room with a microfiber duster", "Water the backyard lawn", "Organize the game cupboard by game type",
-            "Write the numbers 1 to 50 sequentially while humming a tune", "Wash the car hood with a bucket and sponge", "Clean the bathroom tiles with a scrub brush",
-            "Pick up pinecones in the front yard", "Wipe down the refrigerator door with a damp cloth", "Dust the ceiling corners in the bedroom with a long duster",
-            "Water the front shrubs", "Organize the pet supplies by type", "Vacuum the living room rug",
-            "Clean the kitchen chairs with a damp sponge", "Pick up trash in the side yard", "Wipe down the bathroom sink with a soft cloth",
-            "Sweep the front walkway", "Dust the wall vents in the hallway with a soft brush", "Water the garden flowers",
-            "Organize the craft paper by color", "Wash the car side mirrors with a small cloth", "Clean the pet’s toy with a damp cloth",
-            "Rake the side garden", "Wipe down the kitchen cabinets with a damp rag", "Read a 3-page chapter from a kids’ adventure book and summarize in 25 words",
-            "Vacuum the car trunk", "Clean the bathroom light switch with a damp cloth", "Pull weeds in the backyard",
-            "Wipe down the stove with a microfiber cloth", "Dust the wall clocks in the house with a soft brush", "Organize the toy trains by size",
-            "No screen time until tomorrow", "Polish the car rims with a polishing cloth", "Wipe down the TV remote with a damp cloth",
-            "Copy a short description from a kids’ TV show guide", "Dust the TV stand with a microfiber cloth", "No screen time until tomorrow",
-            "No screen time until tomorrow", "No screen time until tomorrow while writing the numbers 1 to 25 sequentially", "Vacuum under the TV console",
-            "No screen time until tomorrow", "No screen time until tomorrow", "Clean the TV remote buttons with a damp swab",
-            "Dust the gaming console with a microfiber cloth", "Wipe down the TV speakers with a damp cloth", "Clean the laptop keyboard with a soft brush",
-            "No screen time until tomorrow", "No screen time until tomorrow while writing the numbers 25 to 1 backwards", "Dust the TV cabinet",
-            "Wash the pet’s bedding with mild detergent", "Dust the TV mount with a microfiber duster", "Clean the laundry room counter with a damp cloth",
-            "Dust the bedroom dresser with a soft cloth", "Clean the pet’s crate with a damp sponge", "No screen time until tomorrow while writing the numbers 50 to 1 backwards",
-            "Vacuum the dining room floor", "Clean the bathroom shower with a scrub brush", "Wipe down all interior door knobs with a damp cloth",
-            "Organize the garage shelves by item type", "Read a 4-page article from a kids’ science magazine and summarize in 25 words", "Mop the living room floor",
-            "Wipe down the laundry room counter", "Read a 3-page story from a kids’ book and summarize in 25 words", "Dust the dining room table with a microfiber cloth",
-            "Vacuum the garage floor", "Read a 4-page chapter from a kids’ history book and summarize in 25 words", "Mop the bedroom floor",
-            "Read a 3-page article on animals and summarize in 25 words", "Wipe down the garage door knobs", "Read a 4-page chapter from a kids’ biography and summarize in 25 words",
-            "Mop the hallway floor", "Wipe down the bedroom door knobs", "Read a 4-page chapter on nature and summarize in 25 words",
-            "Vacuum under the TV stand", "Read a 3-page article on space and summarize in 25 words", "Mop the laundry room floor",
-            "Wipe down the kitchen door knobs", "Read a 3-page article on oceans and summarize in 25 words", "Mop the dining room floor",
-            "Clean the bathroom toilet with a brush and cleaner", "Mop the bathroom floor", "Wipe down the living room door knobs",
-            "Read a 4-page chapter on history and summarize in 25 words", "Read a 3-page article on dinosaurs and summarize in 25 words", "Read a 4-page chapter on adventure and summarize in 25 words",
-            "Read a 3-page article on planets and summarize in 25 words", "Wash the car hood and splash water to wash again", "Clean the pet’s water bowl and refill to clean again",
-            "Sweep the driveway and scatter leaves to sweep again", "Dust the living room shelves and blow dust to dust again", "Water the front lawn and sprinkle dirt to water again",
-            "Clean the kitchen countertops and smear crumbs to clean again", "Copy a short paragraph from a kids’ book and rewrite it", "Rake leaves in the backyard and scatter to rake again",
-            "Organize the garage tools and mix them to organize again", "Wipe down the car windows and smudge to wipe again", "Write the numbers 25 to 1 backwards and rewrite",
-            "Vacuum the car seats and sprinkle dirt to vacuum again", "Pull weeds in the garden and replant to pull again", "Clean the bathroom sink and splash water to clean again",
-            "Copy a short sentence from a kids’ magazine and rewrite it", "Sweep the front porch and scatter dirt to sweep again", "Dust the ceiling fans and blow dust to dust again",
-            "Polish the car door handles", "Polish the car hubcaps", "Clean the laptop screen with a microfiber cloth",
-            "Clean the TV speakers while humming a tune", "Dust the streaming device while humming a tune", "Read a 4-page chapter from a kids’ science book and summarize in 25 words",
-            "Clean the laptop keyboard with a damp swab", "Read a 3-page article on weather and summarize in 25 words", "Organize the bookshelf by book size"
-        ];
-        
-        // --- History Management ---
-        function getHistory() {
-            const history = localStorage.getItem(PUNISHMENT_HISTORY_KEY);
-            return history ? JSON.parse(history) : [];
-        }
-
-        function saveToHistory(sentence) {
-            const history = getHistory();
-            history.push({ sentence: sentence, timestamp: Date.now() });
-            localStorage.setItem(PUNISHMENT_HISTORY_KEY, JSON.stringify(history));
-        }
-
-        function generateRandomPunishment() {
-            let history = getHistory();
-            const now = Date.now();
+            // --- Master Punishment List ---
+            const masterPunishmentList = {
+                '3-5': ["Help put away 10 toys.", "Sit in the quiet corner for 5 minutes and think about your choices.", "Draw a picture of what happened and why it was not a good choice.", "No favorite toy for 15 minutes.", "Help wipe the table with a cloth.", "Sing a song about being kind.", "Apologize with a hug.", "Help a parent with one small chore, like putting away silverware.", "Stack 10 blocks into a tower without knocking it over.", "Clean up your own mess completely.", "Practice saying 'please' and 'thank you' 10 times.", "No screen time for 20 minutes.", "Help sort laundry into light and dark piles.", "Water one houseplant with a small watering can.", "Match 5 pairs of socks from the laundry basket."],
+                '6-8': ["Vacuum the living room", "Dust the furniture", "Mop the kitchen floor", "Feed the pets", "Write 'I will respect others' 10 times", "Clean the bathroom sink", "Organize your bookshelf", "Sweep the porch", "Water the plants", "Write a 5-sentence story about kindness", "Wipe down kitchen counters", "Sort the recycling", "Rake leaves for 15 minutes", "Clean your windows", "Write 'I’m sorry for my actions' 10 times", "Wash the dishes", "Dust the ceiling fans with help", "Pick up trash in the yard", "Organize the toy box", "Write a short letter of apology", "Clean the refrigerator shelves", "Sweep the garage", "Pull weeds for 20 minutes", "Wipe down light switches", "Write 'I will listen to instructions' 20 times", "Fold a small basket of laundry", "Clean the pet’s bedding", "Collect 20 interesting leaves", "Vacuum under your bed", "Write a paragraph about responsibility", "Dust the blinds", "Help water the lawn", "Organize the pantry", "Clean the microwave", "Write 'I will be honest' 20 times", "No screen time for 30 minutes", "Alphabetize the books on one shelf.", "Clean all the phone and tablet screens in the house."],
+                '9-11': ["Vacuum two rooms, including the edges.", "Dust and polish all the wooden furniture in the living room.", "Mop the kitchen and bathroom floors.", "Take out the trash and recycling.", "Write a 250-word essay on why rules are important for a family.", "Deep clean the bathroom sink and mirror.", "Organize the entire family's bookshelf alphabetically by author's last name.", "Sweep the front porch and back patio.", "Water all indoor and outdoor plants, checking if they need it first.", "Help cook a part of dinner (like a salad or side dish).", "Clean all the windows on the ground floor, inside and out.", "Write a formal letter of apology, explaining what you will do differently next time.", "Do a full load of dishes by hand, including pots and pans.", "Organize the garage tool bench or a messy section of the garage.", "No video games for the rest of the day.", "Fold and put away a full load of your own laundry.", "Wash and dry the pet's bedding and clean their food bowls.", "Research a topic of a parent's choice for 30 minutes and write a one-paragraph summary.", "Clean out and vacuum the inside of the family car.", "No phone for 2 hours.", "Clean the shower or bathtub with a scrub brush.", "Alphabetize all the toys in the toy box.", "Mow a section of the lawn with supervision."],
+                '12-13': ["Vacuum the entire house, including stairs and hallways.", "Dust and polish all wooden furniture in the house.", "Mop all hard-surface floors.", "Mow the front and back lawns.", "Write a one-page report on a historical event, citing your sources.", "Scrub the entire bathroom, including the shower, toilet, and floor.", "Organize and clean a significant section of the garage or basement.", "Pressure wash the driveway or patio (with supervision).", "Help with meal planning for the week and create a grocery list.", "Clean all interior and exterior windows of the house.", "Write a heartfelt, multi-paragraph letter of apology and read it aloud.", "Be responsible for all dishwashing for a full day, including loading and unloading the dishwasher.", "Detail the interior of the family car, including vacuuming, wiping surfaces, and cleaning windows.", "No social media for 48 hours.", "Complete two hours of yard work (weeding, raking, etc.).", "Read a challenging book for one hour and write a one-page summary.", "Help a younger sibling with their homework or chores for an hour.", "Plan and cook a simple family meal from start to finish.", "No phone or personal electronics for the entire evening.", "Do a deep clean of the kitchen, including wiping down cabinets and cleaning the stovetop.", "Wash the car, inside and out.", "Walk the dog every day for a week."]
+            };
             
-            const recentHistory = history.filter(item => (now - item.timestamp) < SEVEN_DAYS_IN_MS);
-            localStorage.setItem(PUNISHMENT_HISTORY_KEY, JSON.stringify(recentHistory));
-
-            const recentSentences = recentHistory.map(item => item.sentence);
-            const availableList = masterPunishmentList.filter(p => !recentSentences.includes(p));
-            
-            let sentence;
-            if (availableList.length === 0) {
-                console.log("Resetting punishments.");
-                sentence = masterPunishmentList[Math.floor(Math.random() * masterPunishmentList.length)];
-            } else {
-                sentence = availableList[Math.floor(Math.random() * availableList.length)];
+            function getHistory() { return JSON.parse(localStorage.getItem(PUNISHMENT_HISTORY_KEY) || '[]'); }
+            function saveToHistory(sentence) {
+                const history = getHistory();
+                history.push({ sentence, timestamp: Date.now() });
+                localStorage.setItem(PUNISHMENT_HISTORY_KEY, JSON.stringify(history));
             }
             
-            saveToHistory(sentence);
-            return sentence;
-        }
+            function generateRandomPunishment() {
+                let history = getHistory();
+                const now = Date.now();
+                const recentHistory = history.filter(item => (now - item.timestamp) < SEVEN_DAYS_IN_MS);
+                localStorage.setItem(PUNISHMENT_HISTORY_KEY, JSON.stringify(recentHistory));
+                const recentSentences = recentHistory.map(item => item.sentence);
+                
+                const punishmentList = masterPunishmentList[currentAgeRange];
+                const availableList = punishmentList.filter(p => !recentSentences.includes(p));
+                
+                let sentence;
+                if (availableList.length === 0) {
+                    sentence = punishmentList[Math.floor(Math.random() * punishmentList.length)];
+                } else {
+                    sentence = availableList[Math.floor(Math.random() * availableList.length)];
+                }
+                saveToHistory(sentence);
+                return sentence;
+            }
 
-        // --- Navigation ---
-        const navButtons = document.querySelectorAll('.nav-button');
-        const gameModes = document.querySelectorAll('.game-mode');
-        function switchMode(mode) {
-            if(isSpinning) return;
-            navButtons.forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.nav-button[onclick="switchMode('${mode}')"]`).classList.add('active');
-            gameModes.forEach(m => m.classList.remove('active'));
-            document.getElementById(`${mode}Mode`).classList.add('active');
-        }
+            // --- UI & Game Logic ---
+            function initAudio() {
+                if (audioContext) return;
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    createSounds();
+                } catch (e) { console.error("Web Audio API is not supported."); }
+            }
 
-        // --- Wheel Logic ---
-        const wheel = document.getElementById('wheel'), spinButton = document.getElementById('spinButton'), wheelResultContainer = document.getElementById('wheelResultContainer');
-        const wheelCategories = [ 
-            { color: '#FF6B6B' }, { color: '#FFD166' }, { color: '#06D6A0' }, 
-            { color: '#118AB2' }, { color: '#E07A5F' }, { color: '#3D405B' },
-            { color: '#F2CC8F' }, { color: '#81B29A' }, { color: '#F781C6' }, 
-            { color: '#736CED' }, { color: '#57C4E5' }, { color: '#FCBF49' },
-        ];
-        let currentRotation = 0;
-        function createWheel() {
-            const sliceAngle = 360 / wheelCategories.length;
-            let gradientString = 'conic-gradient(';
-            wheelCategories.forEach((cat, i) => {
-                const startAngle = i * sliceAngle;
-                const endAngle = (i + 1) * sliceAngle;
-                gradientString += `${cat.color} ${startAngle}deg ${endAngle}deg, `;
-            });
-            gradientString = gradientString.slice(0, -2) + ')';
-            wheel.style.background = gradientString;
-            wheel.innerHTML = '<div class="wheel-text-container"><div class="wheel-text">?</div></div>';
-        }
-        function spinWheel() { if(isSpinning)return;isSpinning=true;spinButton.disabled=true;spinButton.textContent='Spinning...';wheelResultContainer.innerHTML='';const f=Math.floor(Math.random()*3)+4,s=Math.floor(Math.random()*wheelCategories.length),a=360/wheelCategories.length;currentRotation+=f*360+s*a+a/2;wheel.style.transform=`rotate(${currentRotation}deg)`;setTimeout(()=>{const result = generateRandomPunishment(); wheelResultContainer.innerHTML=`<p class="result-text">Justice has been served...</p><p class="result-value">${result}</p>`;isSpinning=false;spinButton.disabled=false;spinButton.textContent='SPIN!'},4000) }
-        
-        // --- Slots to Make'em Sorry Logic ---
-        const slotsButton=document.getElementById('slotsButton'), sorrySlotsResult = document.getElementById('sorrySlotsResult');
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
-        function spinSorrySlots() {
-            if(isSpinning) return;
-            isSpinning = true;
-            slotsButton.disabled = true;
-            slotsButton.textContent = "Generating...";
-            sorrySlotsResult.textContent = "";
-            
-            const targetText = generateRandomPunishment();
-            let currentText = '';
-            let intervalCount = 0;
-
-            const scrambleInterval = setInterval(() => {
-                let scrambledText = '';
-                for(let i = 0; i < targetText.length; i++) {
-                    if (i < currentText.length) {
-                        scrambledText += targetText[i];
-                    } else {
-                        scrambledText += chars[Math.floor(Math.random() * chars.length)];
+            function createSounds() {
+                const sampleRate = audioContext.sampleRate;
+                
+                // Wheel Sound: Rhythmic clicks
+                const wheelDuration = 2;
+                const wheelBuffer = audioContext.createBuffer(1, sampleRate * wheelDuration, sampleRate);
+                const wheelData = wheelBuffer.getChannelData(0);
+                for (let i = 0; i < wheelBuffer.length; i++) {
+                    const t = i / sampleRate;
+                    const clickRate = 20 * (1 - t / wheelDuration) + 5;
+                    if(Math.sin(t * clickRate * Math.PI * 2) > 0.8) {
+                        wheelData[i] = Math.random() * 0.5 - 0.25;
                     }
                 }
-                sorrySlotsResult.textContent = scrambledText;
-            }, 50);
+                wheelSoundBuffer = wheelBuffer;
 
-            const revealInterval = setInterval(() => {
-                currentText += targetText[intervalCount] || '';
-                intervalCount++;
-                if (intervalCount > targetText.length) {
-                    clearInterval(scrambleInterval);
-                    clearInterval(revealInterval);
-                    sorrySlotsResult.textContent = targetText;
-                    isSpinning = false;
-                    slotsButton.disabled = false;
-                    slotsButton.textContent = 'PUSH!';
+                // Result Sound: Single happy chime
+                const resultDuration = 0.5;
+                const resultBuffer = audioContext.createBuffer(1, sampleRate * resultDuration, sampleRate);
+                const resultData = resultBuffer.getChannelData(0);
+                const frequency = 1046.50; // C6
+                for (let i = 0; i < resultBuffer.length; i++) {
+                    resultData[i] = Math.sin(Math.PI * 2 * frequency * i / sampleRate) * Math.exp(-i * 0.008);
                 }
-            }, 30);
-        }
-
-        // --- Dice Roll Logic ---
-        const die1=document.getElementById('die1'),die2=document.getElementById('die2'),die3=document.getElementById('die3'),die4=document.getElementById('die4'),diceButton=document.getElementById('diceButton'),diceResultContainer=document.getElementById('diceResultContainer');
-        const choreSymbols = ['🧼', '🧽', '🧸', '🍽️', '💨', '🧹', '💧', '🚽', '🛏️', '🐾', '🐶', '👞', '🌱', '🚗', '🏡', '📏', '🗑️', '💍', '✏️'];
-        
-        function createSymbolDieFace(symbol, showFrown, faceIndex) {
-            const face = document.createElement('div');
-            face.className = `die-face face-${faceIndex}`;
-            const frownHTML = showFrown ? `<div class="die-face-frown">😟</div>` : '';
-            face.innerHTML = `<div class="die-face-symbol-container"><div class="die-face-symbol">${symbol}</div>${frownHTML}</div>`;
-            return face;
-        }
-
-        function createSymbolDie(dieElement, showFrown) {
-            dieElement.innerHTML = '';
-            for(let i = 1; i <= 6; i++) {
-                const randomSymbol = choreSymbols[Math.floor(Math.random() * choreSymbols.length)];
-                dieElement.appendChild(createSymbolDieFace(randomSymbol, showFrown, i));
-            }
-        }
-
-        function setDieFace(dieElement,faceIndex){const rotations={1:'rotateY(0deg)',2:'rotateY(-90deg)',3:'rotateY(-180deg)',4:'rotateY(90deg)',5:'rotateX(-90deg)',6:'rotateX(90deg)'};dieElement.style.transform=rotations[faceIndex];}
-        
-        function rollDice(){
-            if(isSpinning)return;
-            isSpinning=true;
-            diceButton.disabled=true;
-            diceButton.textContent='Rolling...';
-            diceResultContainer.innerHTML='';
-            const dice=[die1,die2,die3,die4];
-
-            const showFrownyFace = Math.random() < 0.04; // 1 in 25 chance
-            dice.forEach(d => createSymbolDie(d, showFrownyFace));
-            
-            dice.forEach(d=>d.classList.add('rolling'));
-            
-            setTimeout(()=>{
-                dice.forEach(d=>d.classList.remove('rolling'));
-                const result = generateRandomPunishment();
+                resultSoundBuffer = resultBuffer;
                 
-                setDieFace(die1, Math.floor(Math.random()*6)+1); 
-                setDieFace(die2, Math.floor(Math.random()*6)+1); 
-                setDieFace(die3, Math.floor(Math.random()*6)+1); 
-                setDieFace(die4, Math.floor(Math.random()*6)+1); 
+                // Dice Sound: Pinball-like
+                const diceDuration = 0.6;
+                const diceBuffer = audioContext.createBuffer(1, sampleRate * diceDuration, sampleRate);
+                const diceData = diceBuffer.getChannelData(0);
+                for (let i = 0; i < sampleRate * 0.05; i++) { diceData[i] = (Math.random() * 2 - 1) * 0.4 * Math.exp(-i * 0.01); }
+                const bounces = [{f: 880, t: 0.1}, {f: 1200, t: 0.25}, {f: 600, t: 0.4}];
+                bounces.forEach(bounce => {
+                    for(let i = 0; i < sampleRate * 0.1; i++) {
+                        const idx = Math.floor(bounce.t * sampleRate) + i;
+                        if(idx < diceBuffer.length) {
+                             diceData[idx] += Math.sin(Math.PI * 2 * bounce.f * i / sampleRate) * 0.5 * Math.exp(-i * 0.01);
+                        }
+                    }
+                });
+                diceSoundBuffer = diceBuffer;
 
-                diceResultContainer.innerHTML=`<p class="result-text">The dice have decided!</p><p class="result-value">${result}</p>`;
-                isSpinning=false;
-                diceButton.disabled=false;
-                diceButton.textContent='ROLL!';
-            }, 1500);
-        }
+                // Slot Machine Scramble Sound
+                const slotScrambleDuration = 0.05;
+                slotScrambleSoundBuffer = audioContext.createBuffer(1, sampleRate * slotScrambleDuration, sampleRate);
+                const scrambleData = slotScrambleSoundBuffer.getChannelData(0);
+                for (let i = 0; i < slotScrambleSoundBuffer.length; i++) {
+                    scrambleData[i] = (Math.random() * 0.2 - 0.1) * Math.exp(-i * 0.05);
+                }
+            }
 
-        // --- Initial Setup ---
-        createWheel();
-        spinButton.addEventListener('click', spinWheel);
-        
-        slotsButton.addEventListener('click', spinSorrySlots);
+            function playSound(buffer) {
+                if (!audioContext || !buffer) return;
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioContext.destination);
+                source.start(0);
+            }
 
-        createSymbolDie(die1, false);
-        createSymbolDie(die2, false);
-        createSymbolDie(die3, false);
-        createSymbolDie(die4, false);
-        diceButton.addEventListener('click', rollDice);
+            window.switchMode = function(mode) {
+                if(isSpinning) return;
+                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`.nav-button[onclick="switchMode('${mode}')"]`).classList.add('active');
+                document.querySelectorAll('.game-mode').forEach(m => m.classList.remove('active'));
+                document.getElementById(`${mode}Mode`).classList.add('active');
+            }
 
+            function createWheel() {
+                const wheel = document.getElementById('wheel');
+                const wheelCategories = [ { color: '#FF6B6B' }, { color: '#FFD166' }, { color: '#06D6A0' }, { color: '#118AB2' }, { color: '#E07A5F' }, { color: '#3D405B' }, { color: '#F2CC8F' }, { color: '#81B29A' }, { color: '#F781C6' }, { color: '#736CED' }, { color: '#57C4E5' }, { color: '#FCBF49' }];
+                const sliceAngle = 360 / wheelCategories.length;
+                let gradientString = 'conic-gradient(';
+                wheelCategories.forEach((cat, i) => {
+                    const startAngle = i * sliceAngle;
+                    const endAngle = (i + 1) * sliceAngle;
+                    gradientString += `${cat.color} ${startAngle}deg ${endAngle}deg, `;
+                });
+                gradientString = gradientString.slice(0, -2) + ')';
+                wheel.style.background = gradientString;
+                wheel.innerHTML = '?';
+            }
+
+            function spinWheel() { 
+                if(isSpinning) return;
+                initAudio();
+                playSound(wheelSoundBuffer);
+                isSpinning=true;
+                const spinButton = document.getElementById('spinButton');
+                const wheelResultContainer = document.getElementById('wheelResultContainer');
+                const wheelResult = document.getElementById('wheelResult');
+                const wheel = document.getElementById('wheel');
+                spinButton.disabled=true;
+                spinButton.textContent='Spinning...';
+                wheelResultContainer.style.display = 'none';
+                const f=Math.floor(Math.random()*5)+5;
+                const s=Math.floor(Math.random()*12);
+                const a=360/12;
+                currentRotation+=f*360+s*a+a/2;
+                wheel.style.transform=`rotate(${currentRotation}deg)`;
+                
+                setTimeout(()=>{
+                    playSound(resultSoundBuffer);
+                    const result = generateRandomPunishment(); 
+                    wheelResult.textContent = result;
+                    wheelResultContainer.style.display = 'block';
+                    isSpinning=false;
+                    spinButton.disabled=false;
+                    spinButton.textContent='SPIN!';
+                }, 4000);
+            }
+            
+            function spinSorrySlots() {
+                if(isSpinning) return;
+                initAudio();
+                isSpinning = true;
+                const slotsButton=document.getElementById('slotsButton');
+                const sorrySlotsResult = document.getElementById('sorrySlotsResult');
+                slotsButton.disabled = true;
+                slotsButton.textContent = "Generating...";
+                sorrySlotsResult.textContent = "";
+                
+                const targetText = generateRandomPunishment();
+                let currentText = '';
+                let intervalCount = 0;
+
+                const scrambleInterval = setInterval(() => {
+                    playSound(slotScrambleSoundBuffer);
+                    let scrambledText = '';
+                    for(let i = 0; i < targetText.length; i++) {
+                        if (i < currentText.length) {
+                            scrambledText += targetText[i];
+                        } else {
+                            scrambledText += chars[Math.floor(Math.random() * chars.length)];
+                        }
+                    }
+                    sorrySlotsResult.textContent = scrambledText;
+                }, 80);
+
+                const revealInterval = setInterval(() => {
+                    currentText += targetText[intervalCount] || '';
+                    intervalCount++;
+                    if (intervalCount > targetText.length) {
+                        clearInterval(scrambleInterval);
+                        clearInterval(revealInterval);
+                        playSound(resultSoundBuffer);
+                        sorrySlotsResult.textContent = targetText;
+                        isSpinning = false;
+                        slotsButton.disabled = false;
+                        slotsButton.textContent = 'PUSH!';
+                    }
+                }, 120);
+            }
+
+            const choreSymbols = ['🧼', '🧽', '🧸', '🍽️', '💨', '🧹', '💧', '🚽', '🛏️', '🐾', '🐶', '👞', '🌱', '🚗', '🏡', '📏', '🗑️', '💍', '✏️'];
+            function createSymbolDie(dieElement) {
+                dieElement.innerHTML = '';
+                for(let i = 1; i <= 6; i++) {
+                    const face = document.createElement('div');
+                    face.className = `die-face face-${i}`;
+                    const randomSymbol = choreSymbols[Math.floor(Math.random() * choreSymbols.length)];
+                    face.textContent = randomSymbol;
+                    dieElement.appendChild(face);
+                }
+            }
+
+            function setDieFace(dieElement,faceIndex){const rotations={1:'rotateY(0deg)',2:'rotateY(-90deg)',3:'rotateY(-180deg)',4:'rotateY(90deg)',5:'rotateX(-90deg)',6:'rotateX(90deg)'};dieElement.style.transform=rotations[faceIndex];}
+            
+            function rollDice(){
+                if(isSpinning)return;
+                initAudio();
+                playSound(diceSoundBuffer);
+                isSpinning=true;
+                const diceButton=document.getElementById('diceButton');
+                const diceResultContainer=document.getElementById('diceResultContainer');
+                const diceResult = document.getElementById('diceResult');
+                diceButton.disabled=true;
+                diceButton.textContent='Rolling...';
+                diceResultContainer.style.display = 'none';
+                const dice=[document.getElementById('die1'),document.getElementById('die2'),document.getElementById('die3'),document.getElementById('die4')];
+                dice.forEach(d=>d.classList.add('rolling'));
+                
+                setTimeout(()=>{
+                    dice.forEach(d=>d.classList.remove('rolling'));
+                    const result = generateRandomPunishment();
+                    
+                    // Set to random faces for visual effect
+                    setDieFace(dice[0], Math.floor(Math.random()*6)+1); 
+                    setDieFace(dice[1], Math.floor(Math.random()*6)+1); 
+                    setDieFace(dice[2], Math.floor(Math.random()*6)+1); 
+                    setDieFace(dice[3], Math.floor(Math.random()*6)+1); 
+
+                    diceResult.textContent = result;
+                    diceResultContainer.style.display = 'block';
+                    isSpinning=false;
+                    diceButton.disabled=false;
+                    diceButton.textContent='ROLL!';
+                }, 1500);
+            }
+
+            // --- Initial Setup ---
+            createWheel();
+            document.getElementById('spinButton').addEventListener('click', spinWheel);
+            document.getElementById('slotsButton').addEventListener('click', spinSorrySlots);
+            document.getElementById('diceButton').addEventListener('click', rollDice);
+            
+            const dieElements = [document.getElementById('die1'), document.getElementById('die2'), document.getElementById('die3'), document.getElementById('die4')];
+            dieElements.forEach(die => createSymbolDie(die));
+            
+            document.querySelectorAll('.age-selector .age-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const allSelectors = document.querySelectorAll('.age-selector .age-button');
+                    const selectedAge = e.target.dataset.age;
+                    
+                    allSelectors.forEach(btn => {
+                        if (btn.dataset.age === selectedAge) {
+                            btn.classList.add('selected');
+                        } else {
+                            btn.classList.remove('selected');
+                        }
+                    });
+                    currentAgeRange = selectedAge;
+                });
+            });
+        });
     </script>
 </body>
 </html>
